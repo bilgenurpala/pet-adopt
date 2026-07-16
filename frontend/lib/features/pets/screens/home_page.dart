@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/widgets/app_scaffold.dart';
+
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return const AppScaffold(
+      title: 'Pet Store',
       body: Center(
         child: Text(
-          'Pet Store',
-          style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+          'Welcome to Pet Store!',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
       ),
     );
