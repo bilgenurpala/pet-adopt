@@ -24,12 +24,13 @@ class EnergyLevel(str, Enum):
 class PetStatus(str, Enum):
     available = "available"
     pending = "pending"
-    sold = "sold"
+    adopted = "adopted" 
 
-class OrderStatus(str, Enum):
-    placed = "placed"
+class ApplicationStatus(str, Enum):  
+    pending = "pending"
     approved = "approved"
-    delivered = "delivered"
+    rejected = "rejected"
+    completed = "completed"
 
 class Role(str, Enum):
     user = "user"
