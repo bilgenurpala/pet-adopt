@@ -8,9 +8,10 @@ class Pet {
     required this.gender,
     required this.size,
     required this.energyLevel,
-    required this.price,
     required this.status,
-    this.description,
+    required this.shelter,
+    required this.vaccinated,
+    required this.description,
     this.photoUrl,
   });
 
@@ -22,8 +23,9 @@ class Pet {
   final String gender;
   final String size;
   final String energyLevel;
-  final double price;
   final String status;
-  final String? description;
+  final String shelter;
+  final bool vaccinated;
+  final String description;
   final String? photoUrl;
 }
