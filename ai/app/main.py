@@ -1,6 +1,10 @@
 from fastapi import FastAPI
 
-app = FastAPI(title="Pet Store AI Service", version="1.0.0")
+from app.routers import description
+
+app = FastAPI(title="PetAdopt AI Service", version="2.0.0")
+
+app.include_router(description.router)
 
 @app.get("/health")
 def health():

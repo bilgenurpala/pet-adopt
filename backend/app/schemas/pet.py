@@ -13,7 +13,7 @@ class PetBase(BaseModel):
     energy_level: EnergyLevel
     description: str | None = None
     photo_url: str | None = None
-    price: Decimal
+    adoption_fee: Decimal | None = None  
     status: PetStatus = PetStatus.available
     category_id: int
 
@@ -30,7 +30,7 @@ class PetUpdate(BaseModel):
     energy_level: EnergyLevel | None = None
     description: str | None = None
     photo_url: str | None = None
-    price: Decimal | None = None
+    adoption_fee: Decimal | None = None  
     status: PetStatus | None = None
     category_id: int | None = None
 
