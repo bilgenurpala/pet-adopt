@@ -1,7 +1,43 @@
 import 'package:flutter/material.dart';
 
-class AiChatPage extends StatelessWidget {
+import '../widgets/chat_message_bubble.dart';
+
+class AiChatPage extends StatefulWidget {
   const AiChatPage({super.key});
+
+  @override
+  State<AiChatPage> createState() => _AiChatPageState();
+}
+
+class _AiChatPageState extends State<AiChatPage> {
+  final TextEditingController _messageController = TextEditingController();
+
+  final List<_ChatMessage> _messages = [
+    const _ChatMessage(
+      message: 'Hello! I can help you find a suitable pet for your lifestyle.',
+      isUser: false,
+    ),
+  ];
+
+  @override
+  void dispose() {
+    _messageController.dispose();
+    super.dispose();
+  }
+
+  void _sendMessage() {
+    final message = _messageController.text.trim();
+
+    if (message.isEmpty) {
+      return;
+    }
+
+    setState(() {
+      _messages.add(_ChatMessage(message: message, isUser: true));
+    });
+
+    _messageController.clear();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -10,42 +46,32 @@ class AiChatPage extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            const SizedBox(height: 24),
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: _messages.length,
+                itemBuilder: (context, index) {
+                  final message = _messages[index];
 
-            const CircleAvatar(
-              radius: 36,
-              backgroundColor: Color(0xFFD4A017),
-              child: Icon(Icons.pets, color: Colors.white, size: 34),
-            ),
-
-            const SizedBox(height: 16),
-
-            Text('Hello 👋', style: Theme.of(context).textTheme.headlineSmall),
-
-            const SizedBox(height: 8),
-
-            const Text(
-              'I can help you find the perfect pet.\nAsk me anything!',
-              textAlign: TextAlign.center,
-            ),
-
-            const SizedBox(height: 24),
-
-            const Expanded(
-              child: Center(
-                child: Text(
-                  'No messages yet',
-                  style: TextStyle(color: Colors.grey),
-                ),
+                  return ChatMessageBubble(
+                    message: message.message,
+                    isUser: message.isUser,
+                  );
+                },
               ),
             ),
-
-            Padding(
+            Container(
               padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                border: Border(top: BorderSide(color: Colors.grey.shade300)),
+              ),
               child: Row(
                 children: [
                   Expanded(
                     child: TextField(
+                      controller: _messageController,
+                      onSubmitted: (_) => _sendMessage(),
                       decoration: InputDecoration(
                         hintText: 'Ask anything...',
                         border: OutlineInputBorder(
@@ -54,10 +80,15 @@ class AiChatPage extends StatelessWidget {
                       ),
                     ),
                   ),
-
                   const SizedBox(width: 12),
-
-                  FilledButton(onPressed: () {}, child: const Icon(Icons.send)),
+                  IconButton.filled(
+                    onPressed: _sendMessage,
+                    style: IconButton.styleFrom(
+                      backgroundColor: const Color(0xFFD4A017),
+                      foregroundColor: Colors.white,
+                    ),
+                    icon: const Icon(Icons.send),
+                  ),
                 ],
               ),
             ),
@@ -66,4 +97,11 @@ class AiChatPage extends StatelessWidget {
       ),
     );
   }
+}
+
+class _ChatMessage {
+  const _ChatMessage({required this.message, required this.isUser});
+
+  final String message;
+  final bool isUser;
 }
