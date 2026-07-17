@@ -12,8 +12,11 @@ class MockPetService {
         gender: 'Male',
         size: 'Large',
         energyLevel: 'High',
-        price: 8500,
         status: 'Available',
+        shelter: 'Happy Paws Shelter',
+        vaccinated: true,
+        description:
+            'Buddy is a friendly and energetic Golden Retriever who enjoys long walks and playing with children.',
       ),
       Pet(
         id: 2,
@@ -24,8 +27,11 @@ class MockPetService {
         gender: 'Female',
         size: 'Medium',
         energyLevel: 'Medium',
-        price: 6500,
         status: 'Available',
+        shelter: 'Hope Animal Center',
+        vaccinated: true,
+        description:
+            'Luna is a calm indoor cat looking for a loving family and a quiet home.',
       ),
       Pet(
         id: 3,
@@ -36,8 +42,11 @@ class MockPetService {
         gender: 'Male',
         size: 'Medium',
         energyLevel: 'High',
-        price: 7200,
         status: 'Reserved',
+        shelter: 'Love Pets Rescue',
+        vaccinated: true,
+        description:
+            'Charlie is an intelligent Beagle with a playful personality who loves outdoor activities.',
       ),
       Pet(
         id: 4,
@@ -48,8 +57,11 @@ class MockPetService {
         gender: 'Male',
         size: 'Small',
         energyLevel: 'Low',
-        price: 7800,
         status: 'Available',
+        shelter: 'Happy Tails Shelter',
+        vaccinated: false,
+        description:
+            'Milo is a gentle and affectionate cat who enjoys relaxing and spending time with people.',
       ),
     ];
   }

@@ -60,7 +60,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      title: 'Pet Store',
+      title: 'Pet Adoption',
       body: Column(
         children: [
           SearchBarWidget(onChanged: _onSearchChanged),
@@ -83,7 +83,7 @@ class _HomePageState extends State<HomePage> {
                           maxCrossAxisExtent: 320,
                           crossAxisSpacing: 16,
                           mainAxisSpacing: 16,
-                          childAspectRatio: 0.9,
+                          childAspectRatio: 0.65,
                         ),
                     itemBuilder: (context, index) {
                       return PetCard(pet: filteredPets[index]);
