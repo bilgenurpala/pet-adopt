@@ -25,3 +25,35 @@ def ask_claude(prompt: str, system: str | None = None, max_tokens: int = 1024) -
         **kwargs,
     )
     return message.content[0].text
+
+@retry(
+    retry=retry_if_exception_type((RateLimitError, InternalServerError, APIConnectionError)),
+    wait=wait_exponential(min=settings.llm_wait_min, max=settings.llm_wait_max),
+    stop=stop_after_attempt(settings.llm_max_attempts),
+    reraise=True
+)
+def ask_claude_vision(prompt: str, image_base64: str, media_type: str, system: str | None = None, max_tokens: int = 1024) -> str:
+    kwargs = {}
+    if system:
+        kwargs["system"] = system
+
+    message = client.messages.create(
+        model=MODEL,
+        max_tokens=max_tokens,
+        messages=[{
+            "role": "user",
+            "content": [
+                {
+                    "type": "image",
+                    "source": {
+                        "type": "base64",
+                        "media_type": media_type,
+                        "data": image_base64,
+                    },
+                },
+                {"type": "text", "text": prompt},
+            ],
+        }],
+        **kwargs,
+    )
+    return message.content[0].text

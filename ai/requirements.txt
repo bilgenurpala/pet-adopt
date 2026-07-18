@@ -1,3 +1,6 @@
 fastapi
 uvicorn
 anthropic
+pydantic-settings
+tenacity
+python-multipart
