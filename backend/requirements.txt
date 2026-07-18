@@ -2,3 +2,10 @@ fastapi
 uvicorn
 pydantic-settings
 bcrypt
+sqlalchemy
+psycopg2-binary
+alembic
+sqlalchemy
+psycopg2-binary
+alembic
+bcrypt

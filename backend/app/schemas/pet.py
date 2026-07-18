@@ -14,7 +14,7 @@ class PetBase(BaseModel):
     description: str | None = None
     photo_url: str | None = None
     adoption_fee: Decimal | None = None  
-    status: PetStatus = PetStatus.available
+    status: PetStatus = PetStatus.AVAILABLE
     category_id: int
 
 class PetCreate(PetBase):
