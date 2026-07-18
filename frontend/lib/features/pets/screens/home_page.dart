@@ -32,11 +32,10 @@ class _HomePageState extends State<HomePage> {
   void _filterPets() {
     setState(() {
       filteredPets = allPets.where((pet) {
-        final matchesSpecies = selectedSpecies == 'All'
-            ? true
-            : pet.species == selectedSpecies;
+        final matchesSpecies =
+            selectedSpecies == 'All' || pet.species == selectedSpecies;
 
-        final query = currentSearch.toLowerCase();
+        final query = currentSearch.trim().toLowerCase();
 
         final matchesSearch =
             pet.name.toLowerCase().contains(query) ||
@@ -57,40 +56,84 @@ class _HomePageState extends State<HomePage> {
     _filterPets();
   }
 
+  int _columnCount(double width) {
+    if (width < 600) {
+      return 1;
+    }
+
+    if (width < 900) {
+      return 2;
+    }
+
+    if (width < 1200) {
+      return 3;
+    }
+
+    return 4;
+  }
+
+  double _cardAspectRatio(int columnCount) {
+    if (columnCount == 1) {
+      return 0.9;
+    }
+
+    if (columnCount == 2) {
+      return 0.72;
+    }
+
+    return 0.68;
+  }
+
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
       title: 'Pet Adoption',
-      body: Column(
-        children: [
-          SearchBarWidget(onChanged: _onSearchChanged),
-          const SizedBox(height: 16),
-          SpeciesFilterChips(
-            selectedSpecies: selectedSpecies,
-            onSelected: _onSpeciesChanged,
-          ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: filteredPets.isEmpty
-                ? const EmptyState(
-                    title: 'No pets found',
-                    subtitle: 'Try another search keyword.',
-                  )
-                : GridView.builder(
-                    itemCount: filteredPets.length,
-                    gridDelegate:
-                        const SliverGridDelegateWithMaxCrossAxisExtent(
-                          maxCrossAxisExtent: 320,
-                          crossAxisSpacing: 16,
-                          mainAxisSpacing: 16,
-                          childAspectRatio: 0.65,
-                        ),
-                    itemBuilder: (context, index) {
-                      return PetCard(pet: filteredPets[index]);
-                    },
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final columnCount = _columnCount(constraints.maxWidth);
+
+          return Column(
+            children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 900),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SearchBarWidget(onChanged: _onSearchChanged),
+                      const SizedBox(height: 16),
+                      SpeciesFilterChips(
+                        selectedSpecies: selectedSpecies,
+                        onSelected: _onSpeciesChanged,
+                      ),
+                    ],
                   ),
-          ),
-        ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              Expanded(
+                child: filteredPets.isEmpty
+                    ? const EmptyState(
+                        title: 'No pets found',
+                        subtitle: 'Try another search keyword.',
+                      )
+                    : GridView.builder(
+                        itemCount: filteredPets.length,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: columnCount,
+                          crossAxisSpacing: 18,
+                          mainAxisSpacing: 18,
+                          childAspectRatio: _cardAspectRatio(columnCount),
+                        ),
+                        itemBuilder: (context, index) {
+                          return PetCard(pet: filteredPets[index]);
+                        },
+                      ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
