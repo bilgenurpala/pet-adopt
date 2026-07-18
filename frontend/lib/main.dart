@@ -4,11 +4,15 @@ import 'package:provider/provider.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 import 'features/pets/providers/favorites_provider.dart';
+import 'features/pets/providers/pet_provider.dart';
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => FavoritesProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => FavoritesProvider()),
+        ChangeNotifierProvider(create: (_) => PetProvider()),
+      ],
       child: const PetStoreApp(),
     ),
   );
@@ -20,7 +24,7 @@ class PetStoreApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: 'PetMatch',
+      title: 'Pet Adoption',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       routerConfig: AppRouter.router,
