@@ -2,7 +2,7 @@ import unittest
 from decimal import Decimal
 from uuid import uuid4
 
-from database_test_base import DatabaseTestCase
+from .database_test_base import DatabaseTestCase
 from app.models.adoptionapplication import AdoptionApplication
 from app.models.category import Category
 from app.models.enums import (

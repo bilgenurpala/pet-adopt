@@ -2,7 +2,7 @@ import unittest
 from uuid import uuid4
 from sqlalchemy import inspect as sa_inspect
 
-from database_test_base import DatabaseTestCase, test_engine # app.database engine yerine test_engine'i al
+from .database_test_base import DatabaseTestCase, test_engine # app.database engine yerine test_engine'i al
 from app.models.user import User
 from app.core.security import hash_password, verify_password
 
