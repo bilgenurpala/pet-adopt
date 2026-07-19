@@ -1,3 +1,5 @@
+from app.prompts.age_format import format_age_tr
+
 PROMPT_VERSION = "recommend_v1"
 
 SYSTEM = (
@@ -13,7 +15,7 @@ SYSTEM = (
 def _format_pet(p: dict) -> str:
     return (
         f'- id={p["id"]} | {p["name"]} | {p["species"]} | {p["breed"]} | '
-        f'{p["age"]} yas | {p["gender"]} | size={p["size"]} | '
+        f'{format_age_tr(p["age"])} | {p["gender"]} | size={p["size"]} | '
         f'energy={p["energy_level"]} | {p["description"]}'
     )
 
