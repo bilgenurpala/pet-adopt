@@ -1,7 +1,11 @@
 import '../models/pet.dart';
 
 class MockPetService {
-  static List<Pet> getPets() {
+  const MockPetService._();
+
+  static Future<List<Pet>> getPets() async {
+    await Future.delayed(const Duration(milliseconds: 300));
+
     return const [
       Pet(
         id: 1,

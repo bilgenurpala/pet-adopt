@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../../core/widgets/app_scaffold.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../models/pet.dart';
-import '../services/mock_pet_service.dart';
+import '../providers/pet_provider.dart';
 import '../widgets/pet_card.dart';
 import '../widgets/search_bar_widget.dart';
 import '../widgets/species_filter_chips.dart';
@@ -16,44 +17,43 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late final List<Pet> allPets;
-  late List<Pet> filteredPets;
-
   String selectedSpecies = 'All';
   String currentSearch = '';
 
   @override
   void initState() {
     super.initState();
-    allPets = MockPetService.getPets();
-    filteredPets = allPets;
-  }
 
-  void _filterPets() {
-    setState(() {
-      filteredPets = allPets.where((pet) {
-        final matchesSpecies =
-            selectedSpecies == 'All' || pet.species == selectedSpecies;
-
-        final query = currentSearch.trim().toLowerCase();
-
-        final matchesSearch =
-            pet.name.toLowerCase().contains(query) ||
-            pet.breed.toLowerCase().contains(query);
-
-        return matchesSpecies && matchesSearch;
-      }).toList();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<PetProvider>().loadPets();
     });
   }
 
+  List<Pet> _filterPets(List<Pet> pets) {
+    final query = currentSearch.trim().toLowerCase();
+
+    return pets.where((pet) {
+      final matchesSpecies =
+          selectedSpecies == 'All' || pet.species == selectedSpecies;
+
+      final matchesSearch =
+          pet.name.toLowerCase().contains(query) ||
+          pet.breed.toLowerCase().contains(query);
+
+      return matchesSpecies && matchesSearch;
+    }).toList();
+  }
+
   void _onSearchChanged(String value) {
-    currentSearch = value;
-    _filterPets();
+    setState(() {
+      currentSearch = value;
+    });
   }
 
   void _onSpeciesChanged(String species) {
-    selectedSpecies = species;
-    _filterPets();
+    setState(() {
+      selectedSpecies = species;
+    });
   }
 
   int _columnCount(double width) {
@@ -88,50 +88,70 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return AppScaffold(
       title: 'Pet Adoption',
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          final columnCount = _columnCount(constraints.maxWidth);
+      body: Consumer<PetProvider>(
+        builder: (context, petProvider, _) {
+          final filteredPets = _filterPets(petProvider.pets);
 
-          return Column(
-            children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 900),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SearchBarWidget(onChanged: _onSearchChanged),
-                      const SizedBox(height: 16),
-                      SpeciesFilterChips(
-                        selectedSpecies: selectedSpecies,
-                        onSelected: _onSpeciesChanged,
+          if (petProvider.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (petProvider.errorMessage != null) {
+            return EmptyState(
+              title: 'Something went wrong',
+              subtitle: petProvider.errorMessage ?? 'Unknown error',
+            );
+          }
+
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              final columnCount = _columnCount(constraints.maxWidth);
+
+              return Column(
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 900),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SearchBarWidget(onChanged: _onSearchChanged),
+                          const SizedBox(height: 16),
+                          SpeciesFilterChips(
+                            selectedSpecies: selectedSpecies,
+                            onSelected: _onSpeciesChanged,
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Expanded(
-                child: filteredPets.isEmpty
-                    ? const EmptyState(
-                        title: 'No pets found',
-                        subtitle: 'Try another search keyword.',
-                      )
-                    : GridView.builder(
-                        itemCount: filteredPets.length,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: columnCount,
-                          crossAxisSpacing: 18,
-                          mainAxisSpacing: 18,
-                          childAspectRatio: _cardAspectRatio(columnCount),
-                        ),
-                        itemBuilder: (context, index) {
-                          return PetCard(pet: filteredPets[index]);
-                        },
-                      ),
-              ),
-            ],
+                  const SizedBox(height: 20),
+                  Expanded(
+                    child: filteredPets.isEmpty
+                        ? const EmptyState(
+                            title: 'No pets found',
+                            subtitle: 'Try another search keyword.',
+                          )
+                        : GridView.builder(
+                            itemCount: filteredPets.length,
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: columnCount,
+                                  crossAxisSpacing: 18,
+                                  mainAxisSpacing: 18,
+                                  childAspectRatio: _cardAspectRatio(
+                                    columnCount,
+                                  ),
+                                ),
+                            itemBuilder: (context, index) {
+                              return PetCard(pet: filteredPets[index]);
+                            },
+                          ),
+                  ),
+                ],
+              );
+            },
           );
         },
       ),
