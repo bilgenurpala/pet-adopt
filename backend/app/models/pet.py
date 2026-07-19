@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, Boolean, Numeric, ForeignKey, Enum
+from sqlalchemy import false as sa_false
 from sqlalchemy.orm import relationship
 from app.database import Base
 from .enums import Species, Gender, Size, EnergyLevel, PetStatus
@@ -20,11 +21,11 @@ class Pet(Base):
     adoption_fee = Column(Numeric(10, 2), nullable=True)  # optional contribution/vet-cost fee
 
     status = Column(Enum(PetStatus, values_callable=lambda e: [i.value for i in e]), nullable=False,
-                    default=PetStatus.AVAILABLE)  # available / pending / adopted
+                    default=PetStatus.AVAILABLE, server_default=PetStatus.AVAILABLE.value)
     owner_id = Column(Integer, ForeignKey("user.id"), nullable=False)
     category_id = Column(Integer, ForeignKey("category.id"), nullable=False)
 
-    is_approved = Column(Boolean, nullable=False, default=False)  # user listings wait for approval; admin sets to true
+    is_approved = Column(Boolean, nullable=False, default=False, server_default=sa_false())
 
     owner = relationship(
         "User",

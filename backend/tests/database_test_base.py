@@ -11,7 +11,7 @@ if str(ROOT) not in sys.path:
 
 # .env dosyasını testlerin de bulabilmesi için yolu belirliyoruz
 from dotenv import load_dotenv
-env_path = ROOT / "backend" / ".env"
+env_path = ROOT / ".env"
 load_dotenv(dotenv_path=env_path)
 
 from app.database import Base

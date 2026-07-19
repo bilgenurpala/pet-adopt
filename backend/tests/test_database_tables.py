@@ -3,7 +3,7 @@ from decimal import Decimal
 from uuid import uuid4
 
 from .database_test_base import DatabaseTestCase
-from app.models.adoptionapplication import AdoptionApplication
+from app.models.adoption_application import AdoptionApplication
 from app.models.category import Category
 from app.models.enums import (
     ApplicationStatus,
@@ -14,8 +14,9 @@ from app.models.enums import (
     Size,
     Species,
 )
-from app.models.favorites import Favorite
+from app.models.favorite import Favorite
 from app.models.pet import Pet
+from app.core.security import hash_password, verify_password
 from app.models.user import User
 
 
@@ -28,8 +29,8 @@ class TestDatabaseTables(DatabaseTestCase):
             email=f"{prefix}_{suffix}@example.com",
             full_name=f"{prefix.title()} Test User",
             role=Role.USER,
+            password_hash=hash_password("secret123"),
         )
-        user.set_password("secret123")
 
         self.db.add(user)
         self.db.commit()
@@ -83,7 +84,7 @@ class TestDatabaseTables(DatabaseTestCase):
         self.assertEqual(saved_user.username, user.username)
         self.assertEqual(saved_user.email, user.email)
         self.assertEqual(saved_user.role, Role.USER)
-        self.assertTrue(saved_user.check_password("secret123"))
+        self.assertTrue(verify_password("secret123", saved_user.password_hash))
 
         self.db.delete(saved_user)
         self.db.commit()

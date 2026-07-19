@@ -1,5 +1,7 @@
 import datetime
 import logging
+import sys
+from app.core.security import hash_password
 from app.database import SessionLocal
 from app.models import User, Category, Pet, AdoptionApplication, Favorite
 from sqlalchemy import text
@@ -42,7 +44,7 @@ def seed_data():
             full_name="Bilge Nur Pala",
             role="admin"
         )
-        user_1.set_password("Bilge1234")
+        user_1.password_hash = hash_password("Bilge1234")
 
         user_2 = User(
             username="daphenzz",
@@ -50,7 +52,7 @@ def seed_data():
             full_name="Sedanur Parmaksız",
             role="user"
         )
-        user_2.set_password("Sedanur2002")
+        user_2.password_hash = hash_password("Sedanur2002")
 
         user_3 = User(
             username="arjin",
@@ -58,7 +60,7 @@ def seed_data():
             full_name="Arjin Özceylan",
             role="user"
         )
-        user_3.set_password("Arjin2026")
+        user_3.password_hash = hash_password("Arjin2026")
 
         all_users = [user_1,user_2,user_3]
         db.add_all(all_users)
@@ -893,15 +895,17 @@ def seed_data():
 
         logger.info("Seeding Successful!")
 
-    except Exception as e:
-        logger.error(f"❌ An error occurred while seeding data: {e}")
-        # Rollback changes if any error occurs to maintain database integrity
+    except Exception:
+        logger.exception("Seeding failed, rolling back")
         db.rollback()
+        raise
     finally:
-        # Always close the session when done
         db.close()
 
 
 if __name__ == "__main__":
     logger.info("Starting the seed process...")
-    seed_data()
+    try:
+        seed_data()
+    except Exception:
+        sys.exit(1)
