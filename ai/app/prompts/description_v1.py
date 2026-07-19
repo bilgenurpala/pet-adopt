@@ -1,3 +1,5 @@
+from app.prompts.age_format import format_age_en
+
 PROMPT_VERSION = "description_v1"
 
 SYSTEM = (
@@ -8,7 +10,9 @@ SYSTEM = (
     "Respond with ONLY a valid JSON object, no other text, in this exact shape: "
     '{"title": "...", "description": "..."}. '
     "title: a short, heartwarming headline. "
-    "description: 2-3 short paragraphs introducing the pet."
+    "description: 2-3 short paragraphs introducing the pet. "
+    "When the age is given in months, the pet is still a baby - reflect that "
+    "in the tone, and never restate the age as a fraction of a year."
 )
 
 def build_prompt(req) -> str:
@@ -17,7 +21,7 @@ def build_prompt(req) -> str:
         f"- Name: {req.name}\n"
         f"- Species: {req.species}\n"
         f"- Breed: {req.breed}\n"
-        f"- Age: {req.age} years\n"
+        f"- Age: {format_age_en(req.age)}\n"
         f"- Gender: {req.gender}\n"
         f"- Size: {req.size}\n"
         f"- Energy Level: {req.energy_level}\n"

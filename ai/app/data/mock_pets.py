@@ -1,10 +1,14 @@
+from decimal import Decimal
+
+# Ages are Decimal to match the DB column Numeric(3, 1) - the real data layer
+# hands back Decimal, so the mocks should exercise the same type.
 MOCK_PETS = [
     {
         "id": 1,
         "name": "Boncuk",
         "species": "cat",
         "breed": "Tekir",
-        "age": 2,
+        "age": Decimal("2.5"),
         "gender": "female",
         "size": "small",
         "energy_level": "medium",
@@ -21,7 +25,7 @@ MOCK_PETS = [
         "name": "Karabas",
         "species": "dog",
         "breed": "Golden Retriever",
-        "age": 3,
+        "age": Decimal("3"),
         "gender": "male",
         "size": "large",
         "energy_level": "high",
@@ -38,7 +42,7 @@ MOCK_PETS = [
         "name": "Fistik",
         "species": "dog",
         "breed": "Pug",
-        "age": 6,
+        "age": Decimal("6"),
         "gender": "female",
         "size": "small",
         "energy_level": "low",
@@ -55,7 +59,7 @@ MOCK_PETS = [
         "name": "Mavis",
         "species": "bird",
         "breed": "Muhabbet Kusu",
-        "age": 1,
+        "age": Decimal("0.5"),
         "gender": "male",
         "size": "small",
         "energy_level": "medium",
@@ -72,7 +76,7 @@ MOCK_PETS = [
         "name": "Pamuk",
         "species": "cat",
         "breed": "Ankara",
-        "age": 4,
+        "age": Decimal("4"),
         "gender": "female",
         "size": "medium",
         "energy_level": "low",
@@ -89,7 +93,7 @@ MOCK_PETS = [
         "name": "Zeytin",
         "species": "dog",
         "breed": "Kangal",
-        "age": 5,
+        "age": Decimal("5"),
         "gender": "male",
         "size": "large",
         "energy_level": "medium",
