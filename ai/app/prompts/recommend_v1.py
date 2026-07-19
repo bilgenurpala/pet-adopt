@@ -1,4 +1,4 @@
-from app.prompts.age_format import format_age_tr
+from app.prompts.age_format import format_age
 
 PROMPT_VERSION = "recommend_v1"
 
@@ -9,13 +9,13 @@ SYSTEM = (
     "Respond with ONLY a valid JSON object, no other text, in this exact shape: "
     '{"pet_id": <int>, "reason": "..."}. '
     "pet_id: the id of the single best matching pet from the list. "
-    "reason: 1-2 warm sentences in Turkish explaining why this pet fits the person."
+    "reason: 1-2 warm sentences in English explaining why this pet fits the person."
 )
 
 def _format_pet(p: dict) -> str:
     return (
         f'- id={p["id"]} | {p["name"]} | {p["species"]} | {p["breed"]} | '
-        f'{format_age_tr(p["age"])} | {p["gender"]} | size={p["size"]} | '
+        f'{format_age(p["age"])} | {p["gender"]} | size={p["size"]} | '
         f'energy={p["energy_level"]} | {p["description"]}'
     )
 
