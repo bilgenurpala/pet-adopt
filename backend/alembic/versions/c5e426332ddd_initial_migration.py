@@ -34,7 +34,7 @@ def upgrade() -> None:
     sa.Column('email', sa.String(), nullable=False),
     sa.Column('full_name', sa.String(), nullable=False),
     sa.Column('password_hash', sa.String(length=128), nullable=False),
-    sa.Column('role', sa.Enum('user', 'admin', name='role'), nullable=False),
+    sa.Column('role', sa.Enum('user', 'admin', name='role'), server_default='user', nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_user_email'), 'user', ['email'], unique=True)
@@ -52,10 +52,10 @@ def upgrade() -> None:
     sa.Column('description', sa.String(), nullable=True),
     sa.Column('photo_url', sa.String(), nullable=True),
     sa.Column('adoption_fee', sa.Numeric(precision=10, scale=2), nullable=True),
-    sa.Column('status', sa.Enum('available', 'pending', 'adopted', name='petstatus'), nullable=False),
+    sa.Column('status', sa.Enum('available', 'pending', 'adopted', name='petstatus'), server_default='available', nullable=False),
     sa.Column('owner_id', sa.Integer(), nullable=False),
     sa.Column('category_id', sa.Integer(), nullable=False),
-    sa.Column('is_approved', sa.Boolean(), nullable=False),
+    sa.Column('is_approved', sa.Boolean(), server_default=sa.false(), nullable=False),
     sa.ForeignKeyConstraint(['category_id'], ['category.id'], ),
     sa.ForeignKeyConstraint(['owner_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -66,7 +66,7 @@ def upgrade() -> None:
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('pet_id', sa.Integer(), nullable=False),
     sa.Column('message', sa.String(), nullable=True),
-    sa.Column('status', sa.Enum('pending', 'approved', 'rejected', 'completed', name='applicationstatus'), nullable=False),
+    sa.Column('status', sa.Enum('pending', 'approved', 'rejected', 'completed', name='applicationstatus'), server_default='pending', nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.ForeignKeyConstraint(['pet_id'], ['pet.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
@@ -99,3 +99,16 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_category_id'), table_name='category')
     op.drop_table('category')
     # ### end Alembic commands ###
+
+    bind = op.get_bind()
+    if bind.dialect.name == "postgresql":
+        for enum_name in (
+            "species",
+            "gender",
+            "size",
+            "energylevel",
+            "petstatus",
+            "applicationstatus",
+            "role",
+        ):
+            op.execute(f"DROP TYPE IF EXISTS {enum_name}")

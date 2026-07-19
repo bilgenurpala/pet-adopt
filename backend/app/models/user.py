@@ -1,7 +1,6 @@
 from sqlalchemy import Column, Integer, String, Enum
 from sqlalchemy.orm import relationship
 from app.database import Base
-from app.core.security import hash_password, verify_password
 from .enums import Role
 
 
@@ -12,18 +11,12 @@ class User(Base):
     username = Column(String, unique=True, index=True, nullable=False)
     email = Column(String, unique=True, index=True, nullable=False)
     full_name = Column(String, nullable=False)
-    password_hash = Column(String(128), nullable=False)  # Never store plain passwords — hashed in service layer
-    role = Column(Enum(Role, values_callable=lambda e: [i.value for i in e]), nullable=False, default=Role.USER)
-
-    pets = relationship(
-        "Pet",
-        back_populates="owner"
+    password_hash = Column(String(128), nullable=False)
+    role = Column(
+        Enum(Role, values_callable=lambda e: [i.value for i in e]),
+        nullable=False,
+        default=Role.USER,
+        server_default=Role.USER.value,
     )
 
-    def set_password(self, password: str) -> None:
-        self.password_hash = hash_password(password)
-
-    def check_password(self, password: str) -> bool:
-        if not self.password_hash:
-            return False
-        return verify_password(password, self.password_hash)
+    pets = relationship("Pet", back_populates="owner")
