@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:16
+    container_name: petadopt-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: petadopt
+      POSTGRES_PASSWORD: petadopt
+      POSTGRES_DB: petadopt
+    ports:
+      - "5432:5432"
+    volumes:
+      - petadopt_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U petadopt -d petadopt"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  petadopt_pgdata:
