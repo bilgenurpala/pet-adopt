@@ -13,7 +13,7 @@ class AdoptionApplication(Base):
     pet_id = Column(Integer, ForeignKey("pet.id"), nullable=False)
 
     message = Column(String, nullable=True)  # Applicant's "why I want to adopt" text
-    status = Column(Enum(ApplicationStatus, name="application_status_enum"),
+    status = Column(Enum(ApplicationStatus, values_callable=lambda e: [i.value for i in e]),
                     nullable=False,
                     default=ApplicationStatus.PENDING)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
