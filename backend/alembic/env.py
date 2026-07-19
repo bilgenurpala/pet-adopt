@@ -2,11 +2,13 @@ import os
 import sys
 from logging.config import fileConfig
 
+import alembic
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from alembic import context
 from dotenv import load_dotenv
 
+script_location = alembic
 # Append the current working directory to sys.path
 sys.path.append(os.getcwd())
 

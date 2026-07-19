@@ -1,8 +1,8 @@
-"""initial_migration
+"""initial migration
 
-Revision ID: 244134efcfa8
+Revision ID: c5e426332ddd
 Revises: 
-Create Date: 2026-07-18 22:07:52.296159
+Create Date: 2026-07-19 15:30:31.834731
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '244134efcfa8'
+revision: str = 'c5e426332ddd'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -32,9 +32,9 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('username', sa.String(), nullable=False),
     sa.Column('email', sa.String(), nullable=False),
-    sa.Column('full_name', sa.String(), nullable=True),
+    sa.Column('full_name', sa.String(), nullable=False),
     sa.Column('password_hash', sa.String(length=128), nullable=False),
-    sa.Column('role', sa.Enum('USER', 'ADMIN', name='role_enum'), nullable=False),
+    sa.Column('role', sa.Enum('user', 'admin', name='role'), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_user_email'), 'user', ['email'], unique=True)
@@ -43,16 +43,16 @@ def upgrade() -> None:
     op.create_table('pet',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(), nullable=False),
-    sa.Column('species', sa.Enum('CAT', 'DOG', 'BIRD', 'FISH', 'OTHER', name='species_enum'), nullable=False),
+    sa.Column('species', sa.Enum('cat', 'dog', 'bird', 'fish', 'other', name='species'), nullable=False),
     sa.Column('breed', sa.String(), nullable=False),
     sa.Column('age', sa.Numeric(precision=3, scale=1), nullable=False),
-    sa.Column('gender', sa.Enum('MALE', 'FEMALE', name='gender_enum'), nullable=False),
-    sa.Column('size', sa.Enum('SMALL', 'MEDIUM', 'LARGE', name='size_enum'), nullable=False),
-    sa.Column('energy_level', sa.Enum('LOW', 'MEDIUM', 'HIGH', name='energy_level_enum'), nullable=False),
+    sa.Column('gender', sa.Enum('male', 'female', name='gender'), nullable=False),
+    sa.Column('size', sa.Enum('small', 'medium', 'large', name='size'), nullable=False),
+    sa.Column('energy_level', sa.Enum('low', 'medium', 'high', name='energylevel'), nullable=False),
     sa.Column('description', sa.String(), nullable=True),
     sa.Column('photo_url', sa.String(), nullable=True),
     sa.Column('adoption_fee', sa.Numeric(precision=10, scale=2), nullable=True),
-    sa.Column('status', sa.Enum('AVAILABLE', 'PENDING', 'ADOPTED', name='status_enum'), nullable=False),
+    sa.Column('status', sa.Enum('available', 'pending', 'adopted', name='petstatus'), nullable=False),
     sa.Column('owner_id', sa.Integer(), nullable=False),
     sa.Column('category_id', sa.Integer(), nullable=False),
     sa.Column('is_approved', sa.Boolean(), nullable=False),
@@ -66,7 +66,7 @@ def upgrade() -> None:
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('pet_id', sa.Integer(), nullable=False),
     sa.Column('message', sa.String(), nullable=True),
-    sa.Column('status', sa.Enum('PENDING', 'APPROVED', 'REJECTED', 'COMPLETED', name='application_status_enum'), nullable=False),
+    sa.Column('status', sa.Enum('pending', 'approved', 'rejected', 'completed', name='applicationstatus'), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.ForeignKeyConstraint(['pet_id'], ['pet.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),

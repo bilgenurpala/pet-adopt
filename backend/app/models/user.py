@@ -11,9 +11,9 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True, nullable=False)
     email = Column(String, unique=True, index=True, nullable=False)
-    full_name = Column(String, nullable=True)
+    full_name = Column(String, nullable=False)
     password_hash = Column(String(128), nullable=False)  # Never store plain passwords — hashed in service layer
-    role = Column(Enum(Role, name="role_enum"), nullable=False, default=Role.USER)
+    role = Column(Enum(Role, values_callable=lambda e: [i.value for i in e]), nullable=False, default=Role.USER)
 
     pets = relationship(
         "Pet",
