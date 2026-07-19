@@ -4,3 +4,5 @@ anthropic
 pydantic-settings
 tenacity
 python-multipart
+sqlalchemy
+psycopg2-binary
