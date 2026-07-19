@@ -43,5 +43,7 @@ class PetUpdate(BaseModel):
 
 class PetOut(PetBase):
     id: int
+    owner_id: int
+    is_approved: bool
 
     model_config = {"from_attributes": True}

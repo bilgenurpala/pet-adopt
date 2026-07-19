@@ -7,4 +7,4 @@ class RecommendPetResponse(BaseModel):
     pet_id: int
     name: str
     reason: str
-    photo_url: str
+    photo_url: str | None = None

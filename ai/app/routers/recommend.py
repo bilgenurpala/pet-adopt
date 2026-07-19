@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import ValidationError
 
 from app.core.llm_client import ask_claude
-from app.data.mock_pets import get_adoptable_pets
+from app.data.pet_repository import get_adoptable_pets
 from app.prompts import recommend_v1
 from app.schemas.recommend import RecommendPetRequest, RecommendPetResponse
 
