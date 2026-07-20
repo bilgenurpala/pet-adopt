@@ -15,6 +15,10 @@ class UserUpdate(BaseModel):
     full_name: str | None = None
     password: str | None = Field(default=None, min_length=8, max_length=72)
 
+class UserRoleUpdate(BaseModel):
+    role: Role
+
+
 class UserOut(UserBase):
     id: int
     role: Role
