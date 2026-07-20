@@ -1,17 +1,152 @@
-# frontend
+# Pet Adoption Frontend
 
-A new Flutter project.
+A Flutter application for a modern Pet Adoption platform.
 
-## Getting Started
+This project provides a responsive user interface for browsing pets, viewing pet details, managing favorites, chatting with an AI assistant, and integrating with a backend REST API.
 
-This project is a starting point for a Flutter application.
+---
 
-A few resources to get you started if this is your first Flutter project:
+# Features
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+- Browse available pets
+- Search pets by name or breed
+- Filter pets by species
+- View pet details
+- Add or remove favorite pets
+- Responsive layout for mobile, tablet and desktop
+- AI Chat interface
+- Repository-based architecture
+- Provider state management
+- Backend-ready API layer
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+---
+
+# Project Structure
+
+```
+lib/
+│
+├── core/
+│
+├── features/
+│   ├── pets/
+│   ├── ai/
+│   ├── profile/
+│   └── settings/
+│
+├── providers/
+│
+├── repositories/
+│
+└── services/
+```
+
+---
+
+# Getting Started
+
+Install dependencies
+
+```bash
+flutter pub get
+```
+
+Run the application
+
+```bash
+flutter run
+```
+
+Analyze the project
+
+```bash
+flutter analyze
+```
+
+Run all tests
+
+```bash
+flutter test
+```
+
+---
+
+# Testing
+
+Current automated tests include:
+
+- Widget Tests
+  - Application startup
+  - Home Page
+  - Favorites Page
+  - Pet Detail Page
+  - Navigation
+
+- Provider Tests
+  - FavoritesProvider
+  - PetProvider
+
+- Repository Tests
+  - PetRepository
+
+---
+
+# Architecture
+
+This project follows a layered architecture.
+
+```
+UI
+│
+▼
+Provider
+│
+▼
+Repository
+│
+▼
+API Service
+│
+▼
+Backend
+```
+
+The architecture allows the frontend to switch between mock data and backend APIs with minimal changes.
+
+---
+
+# Current Status
+
+Completed
+
+- Responsive UI
+- Favorites functionality
+- Search and filtering
+- Provider architecture
+- Repository layer
+- API service preparation
+- Widget tests
+- Provider tests
+- Repository tests
+
+In Progress
+
+- Authentication integration
+- Backend API integration
+- Production data flow
+
+---
+
+# Technologies
+
+- Flutter
+- Dart
+- Provider
+- Dio
+- REST API
+
+---
+
+# License
+
+This project was developed for the 2026 Internship Program.
