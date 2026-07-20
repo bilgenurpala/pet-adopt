@@ -1,19 +1,24 @@
 from datetime import datetime
+
 from pydantic import BaseModel
+
 from .enums import ApplicationStatus
 
-class AdoptionApplicationBase(BaseModel):
+
+class AdoptionApplicationCreate(BaseModel):
+    pet_id: int
+    message: str | None = None
+
+
+class AdoptionApplicationStatusUpdate(BaseModel):
+    status: ApplicationStatus
+
+
+class AdoptionApplicationOut(BaseModel):
+    id: int
     user_id: int
     pet_id: int
-    message: str | None = None  
-
-class AdoptionApplicationCreate(AdoptionApplicationBase):
-    pass  
-class AdoptionApplicationUpdate(BaseModel):
-    status: ApplicationStatus | None = None  
-
-class AdoptionApplicationOut(AdoptionApplicationBase):
-    id: int
+    message: str | None = None
     status: ApplicationStatus
     created_at: datetime
 
