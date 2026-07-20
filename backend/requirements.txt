@@ -9,4 +9,5 @@ sqlalchemy
 psycopg2-binary
 alembic
 pytest
+httpx
 python-dotenv
