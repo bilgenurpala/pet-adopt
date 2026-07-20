@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from .enums import Role
 
 class UserBase(BaseModel):
@@ -7,13 +7,13 @@ class UserBase(BaseModel):
     full_name: str
 
 class UserCreate(UserBase):
-    password: str
+    password: str = Field(min_length=8, max_length=72)
 
 class UserUpdate(BaseModel):
     username: str | None = None
     email: EmailStr | None = None
     full_name: str | None = None
-    password: str | None = None
+    password: str | None = Field(default=None, min_length=8, max_length=72)
 
 class UserOut(UserBase):
     id: int
