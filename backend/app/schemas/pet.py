@@ -20,8 +20,7 @@ class PetBase(BaseModel):
     energy_level: EnergyLevel
     description: str | None = None
     photo_url: str | None = None
-    adoption_fee: Decimal | None = None  
-    status: PetStatus = PetStatus.AVAILABLE
+    adoption_fee: Decimal | None = None
     category_id: int
 
 class PetCreate(PetBase):
@@ -37,13 +36,13 @@ class PetUpdate(BaseModel):
     energy_level: EnergyLevel | None = None
     description: str | None = None
     photo_url: str | None = None
-    adoption_fee: Decimal | None = None  
-    status: PetStatus | None = None
+    adoption_fee: Decimal | None = None
     category_id: int | None = None
 
 class PetOut(PetBase):
     id: int
     owner_id: int
     is_approved: bool
+    status: PetStatus
 
     model_config = {"from_attributes": True}

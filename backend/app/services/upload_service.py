@@ -1,7 +1,8 @@
 import uuid
 from pathlib import Path
 
-UPLOAD_DIR = Path("uploads")
+BASE_DIR = Path(__file__).resolve().parents[2]
+UPLOAD_DIR = BASE_DIR / "uploads"
 ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
 MAX_SIZE = 5 * 1024 * 1024
 

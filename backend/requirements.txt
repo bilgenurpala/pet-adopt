@@ -1,9 +1,13 @@
 fastapi
 uvicorn
 pydantic-settings
+email-validator
 bcrypt
+PyJWT
+python-multipart
 sqlalchemy
 psycopg2-binary
 alembic
 pytest
+httpx
 python-dotenv

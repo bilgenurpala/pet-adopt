@@ -1,9 +1,20 @@
+from pathlib import Path
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
- 
+
+BASE_DIR = Path(__file__).resolve().parents[2]
+
+
 class Settings(BaseSettings):
     app_name: str = "PetAdopt API"
     database_url: str = ""
- 
-    model_config = SettingsConfigDict(env_file=".env")
- 
+
+    secret_key: str
+    algorithm: str = "HS256"
+    access_token_expire_minutes: int = 15
+    refresh_token_expire_days: int = 7
+
+    model_config = SettingsConfigDict(env_file=BASE_DIR / ".env")
+
+
 settings = Settings()
