@@ -1,22 +1,31 @@
 import '../models/pet.dart';
-import '../services/mock_pet_service.dart';
 import '../services/pet_api_service.dart';
 
 class PetRepository {
-  const PetRepository({
-    this.useMockData = true,
-    this.apiService = const PetApiService(),
-  });
+  const PetRepository({this.apiService = const PetApiService()});
 
-  final bool useMockData;
   final PetApiService apiService;
 
-  Future<List<Pet>> getPets() async {
-    if (useMockData) {
-      return MockPetService.getPets();
-    }
+  Future<List<Pet>> getPets({
+    int page = 1,
+    int perPage = 100,
+    String? species,
+    String? size,
+    String? energyLevel,
+    String? status,
+  }) {
+    return apiService.getPets(
+      page: page,
+      perPage: perPage,
+      species: species,
+      size: size,
+      energyLevel: energyLevel,
+      status: status,
+    );
+  }
 
-    throw UnimplementedError('The pets endpoint is not available yet.');
+  Future<Pet> getPetById(int petId) {
+    return apiService.getPetById(petId);
   }
 
   Future<bool> checkBackendHealth() {
