@@ -3,7 +3,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.core.config import settings
 from app.core.errors import add_exception_handlers
-from app.routers import auth, pets
+from app.routers import adoptions, auth, pets
 from app.services.upload_service import UPLOAD_DIR
 
 app = FastAPI(title=settings.app_name, version="2.0.0")
@@ -15,6 +15,7 @@ app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 app.include_router(auth.router)
 app.include_router(pets.router)
+app.include_router(adoptions.router)
 
 
 @app.get("/health")
