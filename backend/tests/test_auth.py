@@ -5,7 +5,12 @@ from fastapi.security import HTTPAuthorizationCredentials
 from app.core import security
 from app.core.config import settings
 from app.core.deps import get_current_user, get_current_user_optional, require_admin
-from app.core.security import create_access_token, decode_access_token
+from app.core.security import (
+    create_access_token,
+    create_refresh_token,
+    decode_access_token,
+    decode_refresh_token,
+)
 from app.models.enums import Role
 from app.models.user import User
 
@@ -121,6 +126,80 @@ class TestLogin:
 
     def test_malformed_body_is_rejected(self, client):
         assert client.post("/auth/login", json={"email": "a@b.com"}).status_code == 422
+
+
+class TestRefresh:
+    def test_login_returns_both_tokens(self, login_body, registered_user):
+        assert decode_access_token(login_body["access_token"]) == registered_user["id"]
+        assert decode_refresh_token(login_body["refresh_token"]) == registered_user["id"]
+
+    def test_the_two_tokens_are_not_interchangeable(self, login_body):
+        assert decode_refresh_token(login_body["access_token"]) is None
+        assert decode_access_token(login_body["refresh_token"]) is None
+
+    def test_valid_refresh_returns_a_working_access_token(
+        self, client, db, registered_user, user_refresh_token
+    ):
+        response = client.post(
+            "/auth/refresh", json={"refresh_token": user_refresh_token}
+        )
+
+        assert response.status_code == 200
+        new_access = response.json()["access_token"]
+        user = get_current_user(credentials=credentials(new_access), db=db)
+        assert user.id == registered_user["id"]
+
+    def test_refresh_rotates_the_refresh_token(self, client, user_refresh_token):
+        body = client.post(
+            "/auth/refresh", json={"refresh_token": user_refresh_token}
+        ).json()
+
+        assert body["refresh_token"] != user_refresh_token
+        assert decode_refresh_token(body["refresh_token"]) is not None
+
+    def test_access_token_cannot_be_used_to_refresh(self, client, user_token):
+        response = client.post("/auth/refresh", json={"refresh_token": user_token})
+
+        assert response.status_code == 401
+
+    def test_refresh_token_cannot_be_used_as_an_access_token(
+        self, db, user_refresh_token
+    ):
+        with pytest.raises(HTTPException) as exc:
+            get_current_user(credentials=credentials(user_refresh_token), db=db)
+
+        assert exc.value.status_code == 401
+
+    def test_expired_refresh_token_is_rejected(
+        self, client, registered_user, monkeypatch
+    ):
+        monkeypatch.setattr(settings, "refresh_token_expire_days", -1)
+        expired = create_refresh_token(registered_user["id"])
+
+        response = client.post("/auth/refresh", json={"refresh_token": expired})
+
+        assert response.status_code == 401
+
+    def test_refresh_token_of_a_deleted_user_is_rejected(
+        self, client, db, registered_user, user_refresh_token
+    ):
+        db.query(User).filter(User.id == registered_user["id"]).delete()
+        db.commit()
+
+        response = client.post(
+            "/auth/refresh", json={"refresh_token": user_refresh_token}
+        )
+
+        assert response.status_code == 401
+
+    def test_garbage_token_is_rejected(self, client):
+        response = client.post("/auth/refresh", json={"refresh_token": "not-a-token"})
+
+        assert response.status_code == 401
+        assert response.headers["content-type"] == "application/problem+json"
+
+    def test_missing_field_is_rejected(self, client):
+        assert client.post("/auth/refresh", json={}).status_code == 422
 
 
 class TestGetCurrentUser:

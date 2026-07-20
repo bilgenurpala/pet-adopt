@@ -73,10 +73,20 @@ def registered_user(client, user_payload):
 
 
 @pytest.fixture
-def user_token(client, registered_user, user_payload):
+def login_body(client, registered_user, user_payload):
     response = client.post(
         "/auth/login",
         json={"email": user_payload["email"], "password": user_payload["password"]},
     )
     assert response.status_code == 200
-    return response.json()["access_token"]
+    return response.json()
+
+
+@pytest.fixture
+def user_token(login_body):
+    return login_body["access_token"]
+
+
+@pytest.fixture
+def user_refresh_token(login_body):
+    return login_body["refresh_token"]

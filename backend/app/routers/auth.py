@@ -2,14 +2,27 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
-from app.core.security import create_access_token, hash_password, verify_password
+from app.core.security import (
+    create_access_token,
+    create_refresh_token,
+    decode_refresh_token,
+    hash_password,
+    verify_password,
+)
 from app.database import get_db
 from app.models.enums import Role
 from app.models.user import User
-from app.schemas.auth import LoginRequest, TokenResponse
+from app.schemas.auth import LoginRequest, RefreshRequest, TokenResponse
 from app.schemas.user import UserCreate, UserOut
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+
+
+def _tokens_for(user: User) -> TokenResponse:
+    return TokenResponse(
+        access_token=create_access_token(user.id),
+        refresh_token=create_refresh_token(user.id),
+    )
 
 
 @router.post("/register", response_model=UserOut, status_code=status.HTTP_201_CREATED)
@@ -47,4 +60,22 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
             detail="Incorrect email or password.",
         )
 
-    return TokenResponse(access_token=create_access_token(user.id))
+    return _tokens_for(user)
+
+
+@router.post("/refresh", response_model=TokenResponse)
+def refresh(payload: RefreshRequest, db: Session = Depends(get_db)):
+    invalid = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Invalid or expired refresh token.",
+    )
+
+    user_id = decode_refresh_token(payload.refresh_token)
+    if user_id is None:
+        raise invalid
+
+    user = db.get(User, user_id)
+    if user is None:
+        raise invalid
+
+    return _tokens_for(user)
