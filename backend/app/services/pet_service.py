@@ -10,6 +10,10 @@ NOT_FOUND = HTTPException(
 )
 
 
+def publicly_visible_pets(db: Session):
+    return db.query(Pet).filter(Pet.is_approved.is_(True))
+
+
 def is_owner(pet: Pet, user: User) -> bool:
     return pet.owner_id == user.id
 

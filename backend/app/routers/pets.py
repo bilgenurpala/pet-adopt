@@ -33,7 +33,7 @@ def list_pets(
     energy_level: EnergyLevel | None = None,
     pet_status: PetStatus | None = Query(None, alias="status"),
 ):
-    query = db.query(Pet).filter(Pet.is_approved.is_(True))
+    query = pet_service.publicly_visible_pets(db)
 
     if species is not None:
         query = query.filter(Pet.species == species)
