@@ -19,7 +19,7 @@ router = APIRouter(prefix="/pets", tags=["pets"])
 def _ensure_category_exists(db: Session, category_id: int) -> None:
     if db.get(Category, category_id) is None:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail=f"Category {category_id} does not exist.",
         )
 
@@ -33,7 +33,7 @@ def list_pets(
     energy_level: EnergyLevel | None = None,
     pet_status: PetStatus | None = Query(None, alias="status"),
 ):
-    query = db.query(Pet).filter(Pet.is_approved.is_(True))
+    query = pet_service.publicly_visible_pets(db)
 
     if species is not None:
         query = query.filter(Pet.species == species)
@@ -43,6 +43,42 @@ def list_pets(
         query = query.filter(Pet.energy_level == energy_level)
     if pet_status is not None:
         query = query.filter(Pet.status == pet_status)
+
+    total = query.count()
+    items = (
+        query.order_by(Pet.id)
+        .offset(pagination.offset)
+        .limit(pagination.per_page)
+        .all()
+    )
+    return paginate(items, total, pagination)
+
+
+@router.get("/mine", response_model=Page[PetOut])
+def list_my_pets(
+    db: Session = Depends(get_db),
+    pagination: PaginationParams = Depends(),
+    current_user: User = Depends(get_current_user),
+):
+    query = db.query(Pet).filter(Pet.owner_id == current_user.id)
+
+    total = query.count()
+    items = (
+        query.order_by(Pet.id)
+        .offset(pagination.offset)
+        .limit(pagination.per_page)
+        .all()
+    )
+    return paginate(items, total, pagination)
+
+
+@router.get("/pending", response_model=Page[PetOut])
+def list_pending_pets(
+    db: Session = Depends(get_db),
+    pagination: PaginationParams = Depends(),
+    current_user: User = Depends(require_admin),
+):
+    query = db.query(Pet).filter(Pet.is_approved.is_(False))
 
     total = query.count()
     items = (
@@ -144,7 +180,7 @@ async def upload_pet_photo(
         pet.photo_url = save_upload(file.filename or "", content)
     except UploadError as exc:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail=str(exc)
         )
 
     db.commit()
