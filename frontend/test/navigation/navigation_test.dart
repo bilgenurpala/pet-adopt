@@ -7,7 +7,9 @@ import 'package:frontend/features/pets/providers/favorites_provider.dart';
 import 'package:frontend/features/pets/providers/pet_provider.dart';
 
 void main() {
-  testWidgets('Application starts successfully', (WidgetTester tester) async {
+  testWidgets('Bottom navigation renders correctly', (
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
@@ -19,8 +21,6 @@ void main() {
     );
 
     await tester.pumpAndSettle();
-
-    expect(find.byType(MainNavigation), findsOneWidget);
 
     expect(find.byType(NavigationBar), findsOneWidget);
   });

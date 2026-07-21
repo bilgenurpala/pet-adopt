@@ -13,7 +13,7 @@ class PetCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isAvailable = pet.status == 'Available';
+    final isAvailable = pet.status.toLowerCase() == 'available';
 
     return Card(
       clipBehavior: Clip.antiAlias,
@@ -102,14 +102,14 @@ class PetCard extends StatelessWidget {
                     Row(
                       children: [
                         const Icon(
-                          Icons.location_on_outlined,
+                          Icons.pets,
                           size: 17,
                           color: AppColors.primaryDark,
                         ),
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(
-                            pet.shelter,
+                            pet.species,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: Theme.of(context).textTheme.bodySmall

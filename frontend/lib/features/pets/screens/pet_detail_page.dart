@@ -47,12 +47,19 @@ class PetDetailPage extends StatelessWidget {
 
             _InfoTile(title: 'Energy Level', value: pet.energyLevel),
 
-            _InfoTile(
-              title: 'Vaccinated',
-              value: pet.vaccinated ? 'Yes' : 'No',
-            ),
+            _InfoTile(title: 'Status', value: pet.status),
 
-            _InfoTile(title: 'Shelter', value: pet.shelter),
+            _InfoTile(title: 'Category', value: pet.categoryId.toString()),
+
+            _InfoTile(title: 'Owner', value: pet.ownerId.toString()),
+
+            _InfoTile(title: 'Approved', value: pet.isApproved ? 'Yes' : 'No'),
+
+            if (pet.adoptionFee != null)
+              _InfoTile(
+                title: 'Adoption Fee',
+                value: '\$${pet.adoptionFee!.toStringAsFixed(2)}',
+              ),
 
             const SizedBox(height: 24),
 
