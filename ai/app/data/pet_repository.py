@@ -14,6 +14,7 @@ ADOPTABLE_PETS_SQL = text(
            gender,
            size,
            energy_level,
+           adoption_fee,
            COALESCE(description, '') AS description,
            photo_url
     FROM "pet"

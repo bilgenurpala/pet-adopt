@@ -1,4 +1,5 @@
 from app.prompts.age_format import format_age
+from app.prompts.fee_format import format_fee
 
 PROMPT_VERSION = "recommend_v1"
 
@@ -16,7 +17,8 @@ def _format_pet(p: dict) -> str:
     return (
         f'- id={p["id"]} | {p["name"]} | {p["species"]} | {p["breed"]} | '
         f'{format_age(p["age"])} | {p["gender"]} | size={p["size"]} | '
-        f'energy={p["energy_level"]} | {p["description"]}'
+        f'energy={p["energy_level"]} | {format_fee(p.get("adoption_fee"))} | '
+        f'{p["description"]}'
     )
 
 def build_prompt(preferences: str, pets: list[dict]) -> str:
