@@ -25,6 +25,25 @@ void main() {
 
     expect(repository.approvedPetId, pendingPet.id);
     expect(find.text(pendingPet.name), findsNothing);
-    expect(find.text('No pending pets'), findsOneWidget);
+    expect(find.text('No pets found'), findsOneWidget);
+  });
+
+  testWidgets('desktop layout renders the pets table', (tester) async {
+    tester.view.physicalSize = const Size(1280, 800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final repository = FakeAdminRepository(pendingPets: [pendingPet]);
+
+    await tester.pumpWidget(
+      ChangeNotifierProvider(
+        create: (_) => AdminPendingPetsProvider(repository: repository),
+        child: const MaterialApp(home: AdminPendingPetsScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(DataTable), findsOneWidget);
+    expect(find.text(pendingPet.name), findsOneWidget);
   });
 }

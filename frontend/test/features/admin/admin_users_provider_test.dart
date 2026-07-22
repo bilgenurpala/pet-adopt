@@ -48,4 +48,20 @@ void main() {
     expect(provider.users, [regularUser]);
     expect(provider.isBusy(regularUser.id), isFalse);
   });
+
+  test('profile update replaces the local user after success', () async {
+    final repository = FakeAdminRepository(users: [regularUser]);
+    final provider = AdminUsersProvider(repository: repository);
+    await provider.load();
+
+    final message = await provider.updateUser(regularUser.id, {
+      'full_name': 'Updated User',
+      'username': regularUser.username,
+      'email': regularUser.email,
+    });
+
+    expect(message, isNull);
+    expect(repository.updatedUserId, regularUser.id);
+    expect(provider.users.single.fullName, 'Updated User');
+  });
 }

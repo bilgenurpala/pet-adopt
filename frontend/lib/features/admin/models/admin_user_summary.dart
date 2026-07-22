@@ -15,12 +15,17 @@ class AdminUserSummary {
 
   bool get isAdmin => role == 'admin';
 
-  AdminUserSummary copyWith({String? role}) {
+  AdminUserSummary copyWith({
+    String? username,
+    String? email,
+    String? fullName,
+    String? role,
+  }) {
     return AdminUserSummary(
       id: id,
-      username: username,
-      email: email,
-      fullName: fullName,
+      username: username ?? this.username,
+      email: email ?? this.email,
+      fullName: fullName ?? this.fullName,
       role: role ?? this.role,
     );
   }

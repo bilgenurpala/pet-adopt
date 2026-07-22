@@ -9,9 +9,7 @@ import 'fake_admin_repository.dart';
 
 void main() {
   testWidgets('pending application exposes only valid actions', (tester) async {
-    final repository = FakeAdminRepository(
-      applications: [pendingApplication],
-    );
+    final repository = FakeAdminRepository(applications: [pendingApplication]);
 
     await tester.pumpWidget(
       ChangeNotifierProvider(
@@ -24,5 +22,24 @@ void main() {
     expect(find.widgetWithText(FilledButton, 'approved'), findsOneWidget);
     expect(find.widgetWithText(FilledButton, 'rejected'), findsOneWidget);
     expect(find.widgetWithText(FilledButton, 'completed'), findsNothing);
+  });
+
+  testWidgets('desktop layout renders the applications table', (tester) async {
+    tester.view.physicalSize = const Size(1280, 800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final repository = FakeAdminRepository(applications: [pendingApplication]);
+
+    await tester.pumpWidget(
+      ChangeNotifierProvider(
+        create: (_) => AdminApplicationsProvider(repository: repository),
+        child: const MaterialApp(home: AdminApplicationsScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(DataTable), findsOneWidget);
+    expect(find.text(pendingApplication.applicantEmail), findsOneWidget);
   });
 }

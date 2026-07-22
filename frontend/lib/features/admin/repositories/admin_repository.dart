@@ -1,4 +1,5 @@
 import '../../pets/models/pet.dart';
+import '../models/admin_category.dart';
 import '../models/admin_adoption_application.dart';
 import '../models/admin_dashboard_stats.dart';
 import '../models/admin_user_summary.dart';
@@ -27,9 +28,22 @@ class AdminRepository {
 
   Future<List<Pet>> getPendingPets({int page = 1, int perPage = 50}) async {
     final items = await service.getPendingPets(page: page, perPage: perPage);
+    return items.whereType<Map<String, dynamic>>().map(Pet.fromJson).toList();
+  }
+
+  Future<List<Pet>> getPets({int page = 1, int perPage = 50}) async {
+    final items = await service.getPets(page: page, perPage: perPage);
+    return items.whereType<Map<String, dynamic>>().map(Pet.fromJson).toList();
+  }
+
+  Future<List<AdminCategory>> getCategories({
+    int page = 1,
+    int perPage = 50,
+  }) async {
+    final items = await service.getCategories(page: page, perPage: perPage);
     return items
         .whereType<Map<String, dynamic>>()
-        .map(Pet.fromJson)
+        .map(AdminCategory.fromJson)
         .toList();
   }
 
@@ -49,7 +63,10 @@ class AdminRepository {
         .toList();
   }
 
-  Future<List<AdminUserSummary>> getUsers({int page = 1, int perPage = 50}) async {
+  Future<List<AdminUserSummary>> getUsers({
+    int page = 1,
+    int perPage = 50,
+  }) async {
     final items = await service.getUsers(page: page, perPage: perPage);
     return items
         .whereType<Map<String, dynamic>>()
@@ -61,11 +78,26 @@ class AdminRepository {
 
   Future<void> deletePet(int petId) => service.deletePet(petId);
 
+  Future<Pet> createPet(Map<String, dynamic> data) async {
+    return Pet.fromJson(await service.createPet(data));
+  }
+
+  Future<Pet> updatePet(int petId, Map<String, dynamic> data) async {
+    return Pet.fromJson(await service.updatePet(petId, data));
+  }
+
   Future<void> updateApplicationStatus(int adoptionId, String status) =>
       service.updateAdoptionStatus(adoptionId, status);
 
   Future<void> updateUserRole(int userId, String role) =>
       service.updateUserRole(userId, role);
+
+  Future<AdminUserSummary> updateUser(
+    int userId,
+    Map<String, dynamic> data,
+  ) async {
+    return AdminUserSummary.fromJson(await service.updateUser(userId, data));
+  }
 
   Future<void> deleteUser(int userId) => service.deleteUser(userId);
 }
