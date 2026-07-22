@@ -28,6 +28,26 @@ class PetRepository {
     return apiService.getPetById(petId);
   }
 
+  Future<List<Pet>> getFavoritePets({int page = 1, int perPage = 100}) {
+    return apiService.getFavoritePets(page: page, perPage: perPage);
+  }
+
+  Future<void> addFavorite(int petId) {
+    return apiService.addFavorite(petId);
+  }
+
+  Future<void> removeFavorite(int petId) {
+    return apiService.removeFavorite(petId);
+  }
+
+  Future<List<Pet>> getMyPets({int page = 1, int perPage = 100}) {
+    return apiService.getMyPets(page: page, perPage: perPage);
+  }
+
+  Future<List<Pet>> getPendingPets({int page = 1, int perPage = 100}) {
+    return apiService.getPendingPets(page: page, perPage: perPage);
+  }
+
   Future<bool> checkBackendHealth() {
     return apiService.checkBackendHealth();
   }

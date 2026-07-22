@@ -18,8 +18,9 @@ void main() {
       size: 'Large',
       energyLevel: 'High',
       status: 'Available',
-      shelter: 'Happy Paws',
-      vaccinated: true,
+      categoryId: 1,
+      ownerId: 1,
+      isApproved: true,
       description: 'Friendly dog',
       photoUrl: '',
     );

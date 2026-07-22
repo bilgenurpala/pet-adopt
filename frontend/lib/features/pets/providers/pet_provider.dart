@@ -13,27 +13,72 @@ class PetProvider extends ChangeNotifier {
   bool _isLoading = false;
   String? _errorMessage;
 
-  List<Pet> get pets => _pets;
+  List<Pet> get pets => List.unmodifiable(_pets);
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
-  Future<void> loadPets() async {
+  Future<void> loadPets({
+    String? species,
+    String? size,
+    String? energyLevel,
+    String? status,
+  }) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      _pets = await _repository.getPets();
-    } catch (e) {
-      _errorMessage = e.toString();
+      _pets = await _repository.getPets(
+        species: species,
+        size: size,
+        energyLevel: energyLevel,
+        status: status,
+      );
+    } catch (error) {
+      _errorMessage = error.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
+  }
 
-    _isLoading = false;
+  Future<void> loadMyPets() async {
+    _isLoading = true;
+    _errorMessage = null;
     notifyListeners();
+
+    try {
+      _pets = await _repository.getMyPets();
+    } catch (error) {
+      _errorMessage = error.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> loadPendingPets() async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      _pets = await _repository.getPendingPets();
+    } catch (error) {
+      _errorMessage = error.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
   Future<bool> checkBackendHealth() {
     return _repository.checkBackendHealth();
+  }
+
+  void clearPets() {
+    _pets.clear();
+    notifyListeners();
   }
 
   void clearError() {

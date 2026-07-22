@@ -17,8 +17,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String selectedSpecies = 'All';
-  String currentSearch = '';
+  String _selectedSpecies = 'All';
+  String _currentSearch = '';
 
   @override
   void initState() {
@@ -29,31 +29,34 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  List<Pet> _filterPets(List<Pet> pets) {
-    final query = currentSearch.trim().toLowerCase();
+  List<Pet> _filterBySearch(List<Pet> pets) {
+    final query = _currentSearch.trim().toLowerCase();
+
+    if (query.isEmpty) {
+      return pets;
+    }
 
     return pets.where((pet) {
-      final matchesSpecies =
-          selectedSpecies == 'All' || pet.species == selectedSpecies;
-
-      final matchesSearch =
-          pet.name.toLowerCase().contains(query) ||
-          pet.breed.toLowerCase().contains(query);
-
-      return matchesSpecies && matchesSearch;
+      return pet.name.toLowerCase().contains(query) ||
+          pet.breed.toLowerCase().contains(query) ||
+          pet.species.toLowerCase().contains(query);
     }).toList();
   }
 
   void _onSearchChanged(String value) {
     setState(() {
-      currentSearch = value;
+      _currentSearch = value;
     });
   }
 
-  void _onSpeciesChanged(String species) {
+  Future<void> _onSpeciesChanged(String species) async {
     setState(() {
-      selectedSpecies = species;
+      _selectedSpecies = species;
     });
+
+    await context.read<PetProvider>().loadPets(
+      species: species == 'All' ? null : species.toLowerCase(),
+    );
   }
 
   int _columnCount(double width) {
@@ -90,7 +93,7 @@ class _HomePageState extends State<HomePage> {
       title: 'Pet Adoption',
       body: Consumer<PetProvider>(
         builder: (context, petProvider, _) {
-          final filteredPets = _filterPets(petProvider.pets);
+          final visiblePets = _filterBySearch(petProvider.pets);
 
           if (petProvider.isLoading) {
             return const Center(child: CircularProgressIndicator());
@@ -119,7 +122,7 @@ class _HomePageState extends State<HomePage> {
                           SearchBarWidget(onChanged: _onSearchChanged),
                           const SizedBox(height: 16),
                           SpeciesFilterChips(
-                            selectedSpecies: selectedSpecies,
+                            selectedSpecies: _selectedSpecies,
                             onSelected: _onSpeciesChanged,
                           ),
                         ],
@@ -128,25 +131,35 @@ class _HomePageState extends State<HomePage> {
                   ),
                   const SizedBox(height: 20),
                   Expanded(
-                    child: filteredPets.isEmpty
+                    child: visiblePets.isEmpty
                         ? const EmptyState(
                             title: 'No pets found',
-                            subtitle: 'Try another search keyword.',
+                            subtitle: 'Try another search keyword or filter.',
                           )
-                        : GridView.builder(
-                            itemCount: filteredPets.length,
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: columnCount,
-                                  crossAxisSpacing: 18,
-                                  mainAxisSpacing: 18,
-                                  childAspectRatio: _cardAspectRatio(
-                                    columnCount,
-                                  ),
-                                ),
-                            itemBuilder: (context, index) {
-                              return PetCard(pet: filteredPets[index]);
+                        : RefreshIndicator(
+                            onRefresh: () {
+                              return context.read<PetProvider>().loadPets(
+                                species: _selectedSpecies == 'All'
+                                    ? null
+                                    : _selectedSpecies.toLowerCase(),
+                              );
                             },
+                            child: GridView.builder(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              itemCount: visiblePets.length,
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: columnCount,
+                                    crossAxisSpacing: 18,
+                                    mainAxisSpacing: 18,
+                                    childAspectRatio: _cardAspectRatio(
+                                      columnCount,
+                                    ),
+                                  ),
+                              itemBuilder: (context, index) {
+                                return PetCard(pet: visiblePets[index]);
+                              },
+                            ),
                           ),
                   ),
                 ],
