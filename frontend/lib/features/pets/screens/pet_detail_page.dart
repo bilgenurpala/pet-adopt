@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../adoptions/providers/adoption_provider.dart';
-
 import '../models/pet.dart';
 
 class PetDetailPage extends StatelessWidget {
@@ -19,55 +18,28 @@ class PetDetailPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              height: 260,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Icon(Icons.pets, size: 120, color: Colors.grey),
-            ),
-
+            _PetPhoto(photoUrl: pet.photoUrl),
             const SizedBox(height: 24),
-
             Text(pet.name, style: Theme.of(context).textTheme.headlineMedium),
-
             const SizedBox(height: 8),
-
             Text(
               '${pet.species} • ${pet.breed}',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-
             const SizedBox(height: 24),
-
             _InfoTile(title: 'Age', value: '${pet.age} years'),
-
             _InfoTile(title: 'Gender', value: pet.gender),
-
             _InfoTile(title: 'Size', value: pet.size),
-
             _InfoTile(title: 'Energy Level', value: pet.energyLevel),
-
             _InfoTile(title: 'Status', value: pet.status),
-
             _InfoTile(title: 'Category', value: pet.categoryId.toString()),
-
             _InfoTile(title: 'Owner', value: pet.ownerId.toString()),
-
             _InfoTile(title: 'Approved', value: pet.isApproved ? 'Yes' : 'No'),
-
             const SizedBox(height: 24),
-
             Text('About', style: Theme.of(context).textTheme.titleLarge),
-
             const SizedBox(height: 8),
-
             Text(pet.description, style: Theme.of(context).textTheme.bodyLarge),
-
             const SizedBox(height: 32),
-
             SizedBox(
               width: double.infinity,
               height: 54,
@@ -90,18 +62,22 @@ class PetDetailPage extends StatelessWidget {
                               pet.id,
                             );
 
-                            if (!context.mounted) return;
+                            if (!context.mounted) {
+                              return;
+                            }
 
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  success
-                                      ? 'Application submitted successfully.'
-                                      : adoptionProvider.errorMessage ??
-                                            'Application failed.',
+                            ScaffoldMessenger.of(context)
+                              ..hideCurrentSnackBar()
+                              ..showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    success
+                                        ? 'Application submitted successfully.'
+                                        : adoptionProvider.errorMessage ??
+                                              'Application failed.',
+                                  ),
                                 ),
-                              ),
-                            );
+                              );
                           },
                     child: adoptionProvider.isSubmitting
                         ? const SizedBox(
@@ -125,6 +101,54 @@ class PetDetailPage extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _PetPhoto extends StatelessWidget {
+  const _PetPhoto({required this.photoUrl});
+
+  final String? photoUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    final url = photoUrl?.trim();
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: SizedBox(
+        height: 260,
+        width: double.infinity,
+        child: url == null || url.isEmpty
+            ? const _PhotoPlaceholder()
+            : Image.network(
+                url,
+                fit: BoxFit.cover,
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) {
+                    return child;
+                  }
+
+                  return const Center(child: CircularProgressIndicator());
+                },
+                errorBuilder: (context, error, stackTrace) {
+                  return const _PhotoPlaceholder();
+                },
+              ),
+      ),
+    );
+  }
+}
+
+class _PhotoPlaceholder extends StatelessWidget {
+  const _PhotoPlaceholder();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.grey.shade200,
+      alignment: Alignment.center,
+      child: const Icon(Icons.pets, size: 120, color: Colors.grey),
     );
   }
 }

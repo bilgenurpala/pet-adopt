@@ -43,6 +43,34 @@ class _FavoritesPageState extends State<FavoritesPage> {
     }
   }
 
+  int _columnCount(double width) {
+    if (width < 700) {
+      return 1;
+    }
+
+    if (width < 1100) {
+      return 2;
+    }
+
+    if (width < 1450) {
+      return 3;
+    }
+
+    return 4;
+  }
+
+  double _cardAspectRatio(int columnCount) {
+    if (columnCount == 1) {
+      return 0.78;
+    }
+
+    if (columnCount == 2) {
+      return 0.68;
+    }
+
+    return 0.65;
+  }
+
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
@@ -61,22 +89,28 @@ class _FavoritesPageState extends State<FavoritesPage> {
             );
           }
 
-          return RefreshIndicator(
-            onRefresh: _refresh,
-            child: GridView.builder(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(12),
-              itemCount: favoritesProvider.favoritePets.length,
-              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 320,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                childAspectRatio: 0.65,
-              ),
-              itemBuilder: (context, index) {
-                return PetCard(pet: favoritesProvider.favoritePets[index]);
-              },
-            ),
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              final columnCount = _columnCount(constraints.maxWidth);
+
+              return RefreshIndicator(
+                onRefresh: _refresh,
+                child: GridView.builder(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.all(12),
+                  itemCount: favoritesProvider.favoritePets.length,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: columnCount,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                    childAspectRatio: _cardAspectRatio(columnCount),
+                  ),
+                  itemBuilder: (context, index) {
+                    return PetCard(pet: favoritesProvider.favoritePets[index]);
+                  },
+                ),
+              );
+            },
           );
         },
       ),

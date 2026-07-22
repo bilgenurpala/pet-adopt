@@ -30,13 +30,22 @@ class PetCard extends StatelessWidget {
             Stack(
               children: [
                 Container(
-                  height: 170,
+                  height: 145,
                   width: double.infinity,
                   color: AppColors.primaryLight,
                   child: pet.photoUrl != null
                       ? Image.network(
                           pet.photoUrl!,
                           fit: BoxFit.cover,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) {
+                              return child;
+                            }
+
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          },
                           errorBuilder: (context, error, stackTrace) {
                             return const _PetImagePlaceholder();
                           },
@@ -44,8 +53,8 @@ class PetCard extends StatelessWidget {
                       : const _PetImagePlaceholder(),
                 ),
                 Positioned(
-                  top: 10,
-                  right: 10,
+                  top: 8,
+                  right: 8,
                   child: Consumer<FavoritesProvider>(
                     builder: (context, favoritesProvider, _) {
                       final isFavorite = favoritesProvider.isFavorite(pet.id);
@@ -54,18 +63,26 @@ class PetCard extends StatelessWidget {
                         color: Colors.white,
                         shape: const CircleBorder(),
                         elevation: 2,
-                        child: IconButton(
-                          tooltip: isFavorite
-                              ? 'Remove from favorites'
-                              : 'Add to favorites',
-                          onPressed: () async {
-                            await favoritesProvider.toggleFavorite(pet);
-                          },
-                          icon: Icon(
-                            isFavorite ? Icons.favorite : Icons.favorite_border,
-                            color: isFavorite
-                                ? AppColors.favorite
-                                : AppColors.textSecondary,
+                        child: SizedBox(
+                          width: 40,
+                          height: 40,
+                          child: IconButton(
+                            padding: EdgeInsets.zero,
+                            tooltip: isFavorite
+                                ? 'Remove from favorites'
+                                : 'Add to favorites',
+                            onPressed: () async {
+                              await favoritesProvider.toggleFavorite(pet);
+                            },
+                            iconSize: 21,
+                            icon: Icon(
+                              isFavorite
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                              color: isFavorite
+                                  ? AppColors.favorite
+                                  : AppColors.textSecondary,
+                            ),
                           ),
                         ),
                       );
@@ -76,7 +93,7 @@ class PetCard extends StatelessWidget {
             ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -84,26 +101,26 @@ class PetCard extends StatelessWidget {
                       pet.name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: AppColors.textPrimary,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
                     Text(
                       pet.breed,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: AppColors.textSecondary,
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 8),
                     Row(
                       children: [
                         const Icon(
                           Icons.pets,
-                          size: 17,
+                          size: 15,
                           color: AppColors.primaryDark,
                         ),
                         const SizedBox(width: 4),
@@ -121,14 +138,14 @@ class PetCard extends StatelessWidget {
                     const Spacer(),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 7,
+                        horizontal: 10,
+                        vertical: 5,
                       ),
                       decoration: BoxDecoration(
                         color: isAvailable
                             ? Colors.green.shade50
                             : Colors.orange.shade50,
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(18),
                       ),
                       child: Text(
                         isAvailable ? 'Available for Adoption' : pet.status,
@@ -138,7 +155,7 @@ class PetCard extends StatelessWidget {
                           color: isAvailable
                               ? AppColors.success
                               : AppColors.warning,
-                          fontSize: 13,
+                          fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -160,7 +177,7 @@ class _PetImagePlaceholder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Center(
-      child: Icon(Icons.pets, size: 72, color: AppColors.primary),
+      child: Icon(Icons.pets, size: 56, color: AppColors.primary),
     );
   }
 }
