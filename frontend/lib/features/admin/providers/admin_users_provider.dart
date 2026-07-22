@@ -56,6 +56,17 @@ class AdminUsersProvider extends ChangeNotifier {
     });
   }
 
+  Future<String?> updateUser(int userId, Map<String, dynamic> data) {
+    return _mutate(userId, () async {
+      final user = await repository.updateUser(userId, data);
+      final index = _users.indexWhere((item) => item.id == userId);
+
+      if (index != -1) {
+        _users[index] = user;
+      }
+    });
+  }
+
   Future<String?> deleteUser(int userId) {
     return _mutate(userId, () async {
       await repository.deleteUser(userId);

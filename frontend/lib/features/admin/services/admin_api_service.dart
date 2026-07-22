@@ -7,6 +7,8 @@ class AdminApiService {
   const AdminApiService();
 
   static const String _stats = '/admin/stats';
+  static const String _pets = '/pets';
+  static const String _categories = '/categories';
   static const String _pendingPets = '/pets/pending';
   static const String _adoptions = '/adoptions';
   static const String _users = '/users';
@@ -14,7 +16,8 @@ class AdminApiService {
 
   static String _approvePet(int petId) => '/pets/$petId/approve';
   static String _pet(int petId) => '/pets/$petId';
-  static String _adoptionStatus(int adoptionId) => '/adoptions/$adoptionId/status';
+  static String _adoptionStatus(int adoptionId) =>
+      '/adoptions/$adoptionId/status';
   static String _userRole(int userId) => '/users/$userId/role';
   static String _user(int userId) => '/users/$userId';
 
@@ -32,6 +35,26 @@ class AdminApiService {
     final response = await _send(
       () => DioProvider.dio.get(
         _pendingPets,
+        queryParameters: {'page': page, 'per_page': perPage},
+      ),
+    );
+    return _itemsOf(response.data);
+  }
+
+  Future<List<dynamic>> getPets({int page = 1, int perPage = 50}) async {
+    final response = await _send(
+      () => DioProvider.dio.get(
+        _pets,
+        queryParameters: {'page': page, 'per_page': perPage},
+      ),
+    );
+    return _itemsOf(response.data);
+  }
+
+  Future<List<dynamic>> getCategories({int page = 1, int perPage = 50}) async {
+    final response = await _send(
+      () => DioProvider.dio.get(
+        _categories,
         queryParameters: {'page': page, 'per_page': perPage},
       ),
     );
@@ -73,6 +96,21 @@ class AdminApiService {
     await _send(() => DioProvider.dio.delete(_pet(petId)));
   }
 
+  Future<Map<String, dynamic>> createPet(Map<String, dynamic> data) async {
+    final response = await _send(() => DioProvider.dio.post(_pets, data: data));
+    return _asMap(response.data);
+  }
+
+  Future<Map<String, dynamic>> updatePet(
+    int petId,
+    Map<String, dynamic> data,
+  ) async {
+    final response = await _send(
+      () => DioProvider.dio.patch(_pet(petId), data: data),
+    );
+    return _asMap(response.data);
+  }
+
   Future<void> updateAdoptionStatus(int adoptionId, String status) async {
     await _send(
       () => DioProvider.dio.patch(
@@ -86,6 +124,16 @@ class AdminApiService {
     await _send(
       () => DioProvider.dio.patch(_userRole(userId), data: {'role': role}),
     );
+  }
+
+  Future<Map<String, dynamic>> updateUser(
+    int userId,
+    Map<String, dynamic> data,
+  ) async {
+    final response = await _send(
+      () => DioProvider.dio.patch(_user(userId), data: data),
+    );
+    return _asMap(response.data);
   }
 
   Future<void> deleteUser(int userId) async {

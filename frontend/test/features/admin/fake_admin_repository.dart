@@ -1,4 +1,5 @@
 import 'package:frontend/features/admin/models/admin_adoption_application.dart';
+import 'package:frontend/features/admin/models/admin_category.dart';
 import 'package:frontend/features/admin/models/admin_dashboard_stats.dart';
 import 'package:frontend/features/admin/models/admin_user_summary.dart';
 import 'package:frontend/features/admin/repositories/admin_repository.dart';
@@ -14,15 +15,21 @@ class FakeAdminRepository extends AdminRepository {
       pendingApplications: 0,
     ),
     this.currentUserId = 1,
+    List<Pet> pets = const [],
+    List<AdminCategory> categories = const [AdminCategory(id: 1, name: 'Dogs')],
     List<Pet> pendingPets = const [],
     List<AdminAdoptionApplication> applications = const [],
     List<AdminUserSummary> users = const [],
-  }) : pendingPets = List.of(pendingPets),
+  }) : pets = List.of(pets),
+       categories = List.of(categories),
+       pendingPets = List.of(pendingPets),
        applications = List.of(applications),
        users = List.of(users);
 
   AdminDashboardStats stats;
   int currentUserId;
+  List<Pet> pets;
+  List<AdminCategory> categories;
   List<Pet> pendingPets;
   List<AdminAdoptionApplication> applications;
   List<AdminUserSummary> users;
@@ -30,12 +37,15 @@ class FakeAdminRepository extends AdminRepository {
   Object? statsError;
   Object? currentUserError;
   Object? pendingPetsError;
+  Object? petsError;
+  Object? categoriesError;
   Object? applicationsError;
   Object? usersError;
   Object? approvePetError;
   Object? deletePetError;
   Object? updateApplicationError;
   Object? updateUserRoleError;
+  Object? updateUserError;
   Object? deleteUserError;
 
   int? approvedPetId;
@@ -44,6 +54,7 @@ class FakeAdminRepository extends AdminRepository {
   String? updatedApplicationStatus;
   int? updatedUserId;
   String? updatedUserRole;
+  Map<String, dynamic>? updatedUserData;
   int? deletedUserId;
   String? requestedApplicationStatus;
 
@@ -72,6 +83,27 @@ class FakeAdminRepository extends AdminRepository {
     }
 
     return List.of(pendingPets);
+  }
+
+  @override
+  Future<List<Pet>> getPets({int page = 1, int perPage = 50}) async {
+    if (petsError != null) {
+      throw petsError!;
+    }
+
+    return List.of(pets);
+  }
+
+  @override
+  Future<List<AdminCategory>> getCategories({
+    int page = 1,
+    int perPage = 50,
+  }) async {
+    if (categoriesError != null) {
+      throw categoriesError!;
+    }
+
+    return List.of(categories);
   }
 
   @override
@@ -137,6 +169,26 @@ class FakeAdminRepository extends AdminRepository {
     if (updateUserRoleError != null) {
       throw updateUserRoleError!;
     }
+  }
+
+  @override
+  Future<AdminUserSummary> updateUser(
+    int userId,
+    Map<String, dynamic> data,
+  ) async {
+    updatedUserId = userId;
+    updatedUserData = data;
+
+    if (updateUserError != null) {
+      throw updateUserError!;
+    }
+
+    final user = users.firstWhere((item) => item.id == userId);
+    return user.copyWith(
+      username: data['username']?.toString(),
+      email: data['email']?.toString(),
+      fullName: data['full_name']?.toString(),
+    );
   }
 
   @override
