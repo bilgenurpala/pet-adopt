@@ -1,3 +1,5 @@
+import '../../../core/network/api_endpoints.dart';
+
 class Pet {
   const Pet({
     required this.id,
@@ -35,7 +37,7 @@ class Pet {
 
   factory Pet.fromJson(Map<String, dynamic> json) {
     return Pet(
-      id: json['id'] as int,
+      id: _parseInt(json['id']),
       name: json['name']?.toString() ?? '',
       species: json['species']?.toString() ?? '',
       breed: json['breed']?.toString() ?? '',
@@ -44,14 +46,38 @@ class Pet {
       size: json['size']?.toString() ?? '',
       energyLevel: json['energy_level']?.toString() ?? '',
       status: json['status']?.toString() ?? '',
-      categoryId: json['category_id'] as int,
-      ownerId: json['owner_id'] as int,
+      categoryId: _parseInt(json['category_id']),
+      ownerId: _parseInt(json['owner_id']),
       isApproved: json['is_approved'] as bool? ?? false,
       description: json['description']?.toString() ?? '',
-      photoUrl: json['photo_url']?.toString(),
+      photoUrl: _resolvePhotoUrl(json['photo_url']),
       adoptionFee: json['adoption_fee'] == null
           ? null
           : double.tryParse(json['adoption_fee'].toString()),
     );
+  }
+
+  static int _parseInt(dynamic value) {
+    if (value is int) {
+      return value;
+    }
+
+    return int.tryParse(value?.toString() ?? '') ?? 0;
+  }
+
+  static String? _resolvePhotoUrl(dynamic value) {
+    final rawUrl = value?.toString().trim();
+
+    if (rawUrl == null || rawUrl.isEmpty) {
+      return null;
+    }
+
+    if (rawUrl.startsWith('http://') || rawUrl.startsWith('https://')) {
+      return rawUrl;
+    }
+
+    final normalizedPath = rawUrl.startsWith('/') ? rawUrl : '/$rawUrl';
+
+    return '${ApiEndpoints.baseUrl}$normalizedPath';
   }
 }
