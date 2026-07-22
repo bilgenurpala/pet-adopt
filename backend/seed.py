@@ -58,7 +58,7 @@ def seed_data():
             username="arjin",
             email="arjin@outlook.com",
             full_name="Arjin Özceylan",
-            role="user"
+            role="admin"
         )
         user_3.password_hash = hash_password("Arjin2026")
 
