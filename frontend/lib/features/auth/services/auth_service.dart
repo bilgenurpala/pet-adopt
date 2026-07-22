@@ -1,6 +1,7 @@
 import '../../../core/network/api_client.dart';
 import '../../../core/network/api_endpoints.dart';
 import '../../../core/storage/token_storage.dart';
+import '../models/user_model.dart';
 
 class AuthService {
   AuthService._();
@@ -40,7 +41,10 @@ class AuthService {
     final accessToken = data['access_token']?.toString();
     final refreshToken = data['refresh_token']?.toString();
 
-    if (accessToken == null || refreshToken == null) {
+    if (accessToken == null ||
+        accessToken.isEmpty ||
+        refreshToken == null ||
+        refreshToken.isEmpty) {
       throw Exception('Authentication tokens were not returned.');
     }
 
@@ -48,6 +52,18 @@ class AuthService {
       accessToken: accessToken,
       refreshToken: refreshToken,
     );
+  }
+
+  static Future<UserModel> getCurrentUser() async {
+    final response = await ApiClient.get(ApiEndpoints.currentUser);
+
+    final data = response.data;
+
+    if (data is! Map<String, dynamic>) {
+      throw Exception('Invalid user response.');
+    }
+
+    return UserModel.fromJson(data);
   }
 
   static Future<void> refreshTokens() async {
@@ -71,7 +87,10 @@ class AuthService {
     final newAccessToken = data['access_token']?.toString();
     final newRefreshToken = data['refresh_token']?.toString();
 
-    if (newAccessToken == null || newRefreshToken == null) {
+    if (newAccessToken == null ||
+        newAccessToken.isEmpty ||
+        newRefreshToken == null ||
+        newRefreshToken.isEmpty) {
       throw Exception('New authentication tokens were not returned.');
     }
 

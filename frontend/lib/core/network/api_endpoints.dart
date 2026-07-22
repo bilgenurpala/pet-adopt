@@ -1,5 +1,6 @@
 abstract final class ApiEndpoints {
   static const String baseUrl = 'http://127.0.0.1:8000';
+  static const String aiBaseUrl = 'http://127.0.0.1:8001';
 
   // Health
   static const String health = '/health';
@@ -34,9 +35,8 @@ abstract final class ApiEndpoints {
       '/adoptions/$adoptionId/status';
 
   // Favorites
-  // Backend endpoints are not available yet.
   static const String favorites = '/favorites';
 
-  // AI
-  static const String aiChat = '/ai/chat';
+  // AI Assistant
+  static const String assistant = '/assistant';
 }

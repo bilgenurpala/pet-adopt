@@ -58,8 +58,8 @@ class PetCard extends StatelessWidget {
                           tooltip: isFavorite
                               ? 'Remove from favorites'
                               : 'Add to favorites',
-                          onPressed: () {
-                            favoritesProvider.toggleFavorite(pet.id);
+                          onPressed: () async {
+                            await favoritesProvider.toggleFavorite(pet);
                           },
                           icon: Icon(
                             isFavorite ? Icons.favorite : Icons.favorite_border,
