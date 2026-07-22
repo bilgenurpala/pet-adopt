@@ -55,7 +55,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final columns = (constraints.maxWidth / 220).floor().clamp(1, 5);
+        final columns = (constraints.maxWidth / 220).floor().clamp(1, 5).toInt();
 
         return SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
