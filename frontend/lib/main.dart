@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
+import 'features/adoptions/providers/adoption_provider.dart';
 import 'features/auth/providers/auth_provider.dart';
 import 'features/pets/providers/favorites_provider.dart';
 import 'features/pets/providers/pet_provider.dart';
@@ -21,6 +22,9 @@ void main() {
           create: (_) => FavoritesProvider(),
         ),
         ChangeNotifierProvider<PetProvider>(create: (_) => PetProvider()),
+        ChangeNotifierProvider<AdoptionProvider>(
+          create: (_) => AdoptionProvider(),
+        ),
       ],
       child: const PetStoreApp(),
     ),

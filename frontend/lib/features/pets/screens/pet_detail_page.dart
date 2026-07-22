@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../adoptions/providers/adoption_provider.dart';
 
 import '../models/pet.dart';
 
@@ -55,12 +58,6 @@ class PetDetailPage extends StatelessWidget {
 
             _InfoTile(title: 'Approved', value: pet.isApproved ? 'Yes' : 'No'),
 
-            if (pet.adoptionFee != null)
-              _InfoTile(
-                title: 'Adoption Fee',
-                value: '\$${pet.adoptionFee!.toStringAsFixed(2)}',
-              ),
-
             const SizedBox(height: 24),
 
             Text('About', style: Theme.of(context).textTheme.titleLarge),
@@ -74,9 +71,55 @@ class PetDetailPage extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               height: 54,
-              child: ElevatedButton(
-                onPressed: () {},
-                child: const Text('Apply for Adoption'),
+              child: Consumer<AdoptionProvider>(
+                builder: (context, adoptionProvider, _) {
+                  final alreadyApplied = adoptionProvider.hasApplicationForPet(
+                    pet.id,
+                  );
+
+                  final canApply =
+                      pet.isApproved &&
+                      pet.status.toLowerCase() == 'available' &&
+                      !alreadyApplied;
+
+                  return ElevatedButton(
+                    onPressed: adoptionProvider.isSubmitting || !canApply
+                        ? null
+                        : () async {
+                            final success = await adoptionProvider.applyForPet(
+                              pet.id,
+                            );
+
+                            if (!context.mounted) return;
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  success
+                                      ? 'Application submitted successfully.'
+                                      : adoptionProvider.errorMessage ??
+                                            'Application failed.',
+                                ),
+                              ),
+                            );
+                          },
+                    child: adoptionProvider.isSubmitting
+                        ? const SizedBox(
+                            width: 22,
+                            height: 22,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : Text(
+                            alreadyApplied
+                                ? 'Application Submitted'
+                                : !pet.isApproved
+                                ? 'Waiting for Approval'
+                                : pet.status.toLowerCase() != 'available'
+                                ? 'Not Available'
+                                : 'Apply for Adoption',
+                          ),
+                  );
+                },
               ),
             ),
           ],

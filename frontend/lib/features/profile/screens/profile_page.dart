@@ -51,14 +51,6 @@ class _ProfilePageState extends State<ProfilePage> {
     await context.read<AuthProvider>().logout();
   }
 
-  void _showComingSoon(String featureName) {
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(content: Text('$featureName is not available yet.')),
-      );
-  }
-
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
@@ -138,7 +130,7 @@ class _ProfilePageState extends State<ProfilePage> {
               title: 'Favorite Pets',
               subtitle: 'View the pets you saved',
               onTap: () {
-                context.go(RouteNames.favorites);
+                context.push(RouteNames.favorites);
               },
             ),
             const SizedBox(height: 12),
@@ -147,7 +139,7 @@ class _ProfilePageState extends State<ProfilePage> {
               title: 'My Pet Listings',
               subtitle: 'View pets you listed for adoption',
               onTap: () {
-                _showComingSoon('My Pet Listings');
+                context.push(RouteNames.myPetListings);
               },
             ),
             const SizedBox(height: 12),
@@ -156,20 +148,9 @@ class _ProfilePageState extends State<ProfilePage> {
               title: 'Adoption Applications',
               subtitle: 'Track your adoption requests',
               onTap: () {
-                _showComingSoon('Adoption Applications');
+                context.push(RouteNames.adoptionApplications);
               },
             ),
-            if (user?.isAdmin == true) ...[
-              const SizedBox(height: 12),
-              _ProfileTile(
-                icon: Icons.admin_panel_settings_outlined,
-                title: 'Admin Panel',
-                subtitle: 'Manage pending pet listings',
-                onTap: () {
-                  _showComingSoon('Admin Panel');
-                },
-              ),
-            ],
             const SizedBox(height: 12),
             _ProfileTile(
               icon: Icons.info_outline,
@@ -199,7 +180,7 @@ class _ProfilePageState extends State<ProfilePage> {
               title: 'Contact',
               subtitle: 'Get help and support',
               onTap: () {
-                _showComingSoon('Contact support');
+                context.push(RouteNames.contact);
               },
             ),
             const SizedBox(height: 12),
@@ -208,7 +189,7 @@ class _ProfilePageState extends State<ProfilePage> {
               title: 'Settings',
               subtitle: 'Manage application preferences',
               onTap: () {
-                _showComingSoon('Settings');
+                context.push(RouteNames.settings);
               },
             ),
             const SizedBox(height: 12),
