@@ -85,7 +85,7 @@ def seed_data():
                         " treatments have been completed, and they are perfectly healthy. There is absolutely no fee"
                         " required for vaccinations or any other expenses. My only request is to find a responsible"
                         " family with sufficient financial means who will love and adopt them like their own child." ,
-            photo_url="https://d128mjo55rz53e.cloudfront.net/media/images/Scottish_fold_14.max-400x400.format-jpeg.jpg",
+            photo_url="/uploads/pets/princess-cf1.png",
             adoption_fee=00.00,
             status="adopted",
             owner_id=user_1.id,
@@ -104,7 +104,7 @@ def seed_data():
             description="She is a 1.5-year-old female, a mix of British Shorthair and Van cat. She is very gentle and "
                         "house-trained. We are looking to rehome her because my mother has been diagnosed with chronic"
                         " bronchitis. I would be very happy if interested individuals could contact me.",
-            photo_url="https://i0.shbdn.com/photos/15/78/28/x16_1329157828cmv.avif",
+            photo_url="/uploads/pets/pera-cf2.png",
             adoption_fee=500.00,
             status="available",
             owner_id=user_1.id,
@@ -123,7 +123,7 @@ def seed_data():
             description="Blue is a gentle and healthy soul. I am looking for a family who will love and care for her "
                         "for a lifetime. I am looking for determined and responsible individuals to reach out. If you "
                         "do not have window screens in your home, please contact me only after having them installed.",
-            photo_url="https://images.litter-robot.com/media/blog/cyrus-chew-exotic-shorthair.jpg",
+            photo_url="/uploads/pets/blue-cf3.png",
             adoption_fee=1000.00,
             status="available",
             owner_id=user_1.id,
@@ -144,7 +144,7 @@ def seed_data():
                         "during our vacations, we believe she will be happy in a new home. We will provide her along "
                         "with her litter box, litter, carrier, and even her food. She has no health issues and is a "
                         "very agile and playful little companion.",
-            photo_url="https://remedyveteriner.com/wp-content/uploads/2025/01/tekir-kedi-3.jpg",
+            photo_url="/uploads/pets/pepper-cf4.png",
             adoption_fee=00.00,
             status="available",
             owner_id=user_1.id,
@@ -164,7 +164,7 @@ def seed_data():
                         " country, so I am looking for a home for my cat. I am moving away, and if I cannot find an"
                         " owner, I will unfortunately have to take her to a shelter. Please, for the sake of God, "
                         "help me so that my cat does not have to go to a shelter. She is a two-year-old spayed female.",
-            photo_url="https://images.petlebi.com/v7/_ptlb/up/race/tuxedo.jpg",
+            photo_url="/uploads/pets/olive-cf5.png",
             adoption_fee=00.00,
             status="available",
             owner_id=user_2.id,
@@ -187,8 +187,7 @@ def seed_data():
                         " home; his siblings have already found their forever homes, and now we are looking for a loving"
                         " family for Atlas who will treat him like their own child for the rest of his life. He is a"
                         " very social, playful, and affectionate little man who loves human company and purrs constantly.",
-            photo_url="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYgzsAoRWgnSiwuamDSwI6V5buz4ERATOgHwnpgJnt"
-                      "F4Zrsigz-943ylWI&s=10",
+            photo_url="/uploads/pets/atlas-cm1.png",
             adoption_fee=00.00,
             status="pending",
             owner_id=user_1.id,
@@ -215,7 +214,7 @@ def seed_data():
                         "lifetime; we kindly ask that only responsible individuals who truly believe they can be his "
                         "family for life reach out. We will provide 24/7 support for any needs, and his toys and carrier "
                         "will be included. Thank you!",
-            photo_url="https://www.lifetimepetcover.co.uk/assets/uploads/Breed%20Pages/Bombay/Bombay---Introduction.jpg",
+            photo_url="/uploads/pets/coal-cm2.png",
             adoption_fee=00.00,
             status="available",
             owner_id=user_1.id,
@@ -236,7 +235,7 @@ def seed_data():
                         " the cat needs, so we are looking for someone who can offer a better environment. He is a"
                         " 2-year-old Persian cat and has been neutered. All of his teeth had to be extracted due to "
                         "decay, but he is otherwise healthy. We will also provide all of his belongings with him.",
-            photo_url="https://moderncat.com/wp-content/uploads/2025/03/ss_2510990453_Akifyeva-S-1-940x640.jpg",
+            photo_url="/uploads/pets/jasper-cm3.png",
             adoption_fee=300.00,
             status="available",
             owner_id=user_1.id,
@@ -253,8 +252,7 @@ def seed_data():
             size="small",
             energy_level="low",
             description="He needs a loving family and will be given away with all his belongings.",
-            photo_url="https://preview.redd.it/are-siamese-always-this-small-v0-3bfj2b0uy14e1.jpg?width=640&crop=smart&"
-                      "auto=webp&s=3b229614bfafed8c9dcfd662b3c365ef1634c00b",
+            photo_url="/uploads/pets/leo-cm4.png",
             adoption_fee=00.00,
             status="available",
             owner_id=user_2.id,
@@ -273,8 +271,7 @@ def seed_data():
             description="He is a 6-year-old cat who stays indoors but occasionally goes outside. He is very meticulous "
                         "about his litter box and loves being petted. He is fully vaccinated, microchipped, "
                         "and neutered.",
-            photo_url="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQdDOdegYGkHyOIKs3nc0DXZjUSZFEKJanzMHvrqp6"
-                      "A0GYRHKclqjuROBkC&s=10",
+            photo_url="/uploads/pets/teddy-cm5.png",
             adoption_fee=00.00,
             status="available",
             owner_id=user_1.id,
@@ -299,7 +296,7 @@ def seed_data():
                         " She will be adopted for free, with no fees involved, provided that the new owner is over 25"
                         " years old, responsible, and prepared to sign an adoption form. We are looking for a forever"
                         " family who will be committed to her for life.",
-            photo_url="https://almankurdu.com/images/slider/undo-von-petworld.webp",
+            photo_url="/uploads/pets/shila-df1.png",
             adoption_fee=00.00,
             status="adopted",
             category_id=cat_dog.id,
@@ -320,7 +317,7 @@ def seed_data():
                         " a home; her eyes and heart are always searching for human companionship. We are looking for a"
                         " warm-hearted person we can trust and who accepts our requirement for follow-ups. Elsa is a"
                         " female, spayed, and fully vaccinated.",
-            photo_url="https://almankurdu.com/images/slider/undo-von-petworld.webp",
+            photo_url="/uploads/pets/elsa-df2.png",
             adoption_fee=1000.00,
             status="available",
             category_id=cat_dog.id,
@@ -344,7 +341,7 @@ def seed_data():
                         "who can provide her with a loving indoor home. The microchip will be transferred, and adoption "
                         "is subject to regular follow-ups and veterinary check-ups, as I would like to stay in touch "
                         "and occasionally visit her. Thank you.",
-            photo_url="https://upload.wikimedia.org/wikipedia/commons/0/09/Collie_Ursula.JPG",
+            photo_url="/uploads/pets/yula-df3.png",
             adoption_fee=00.00,
             status="available",
             category_id=cat_dog.id,
@@ -364,8 +361,7 @@ def seed_data():
                         "her, I will always cover her food expenses. I am moving to another city for work, and my "
                         "current circumstances are not suitable, which breaks my heart. She is spayed, and I am looking"
                         " for a loving home for her. I would be very happy if interested individuals could contact me.",
-            photo_url="https://cdn.mamaplus.com/storage/blogs/husky-kopek-irki-ozellikleri-bakimi-beslenmesi-ve-egitimi"
-                      ".jpg",
+            photo_url="/uploads/pets/luna-df4.png",
             adoption_fee=00.00,
             status="available",
             category_id=cat_dog.id,
@@ -384,8 +380,7 @@ def seed_data():
             description="This beautiful 2-year-old girl was abandoned by her family. She is well-adjusted, gets along "
                         "well with other cats and dogs, and has a balanced temperament. We will respond to those who "
                         "have previous dog experience and provide a short introduction about themselves.",
-            photo_url="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxKMN7FoJODDVNEmbwwZN7-GyB9IThDhiFjbr73o"
-                      "qe5dlBBBzcbBjgf3A&s=10",
+            photo_url="/uploads/pets/lucy-df5.png",
             adoption_fee=00.00,
             status="available",
             category_id=cat_dog.id,
@@ -405,7 +400,7 @@ def seed_data():
                         " for 5 years. We can arrange the handover in Adana or Mersin. They are fully vaccinated and "
                         "have no health issues. They are extremely gentle, quiet, and never bark or bite. They are "
                         "house-trained and are somewhat lazy; short 5-minute walks twice a day are usually sufficient.",
-            photo_url="https://upload.wikimedia.org/wikipedia/commons/1/18/2008-07-28_Dog_at_Frolick_Field.jpg",
+            photo_url="/uploads/pets/merle-dm1.png",
             adoption_fee=00.00,
             status="pending",
             category_id=cat_dog.id,
@@ -431,7 +426,7 @@ def seed_data():
                         " milk. Please note that he may get motion sickness during car rides if he cannot look out the"
                         " window, and he has never traveled in a carrier. We are looking for someone who can give him"
                         " the attention and love he deserves.",
-            photo_url="https://misanimales.com/wp-content/uploads/2016/08/chihuahuas.jpg",
+            photo_url="/uploads/pets/max-dm2.png",
             adoption_fee=400.00,
             status="available",
             category_id=cat_dog.id,
@@ -451,8 +446,7 @@ def seed_data():
                         "the shelter). He is very gentle and intelligent. We are looking for an experienced family who "
                         "will never abandon him again. Adoption is completely free of charge—we do not request any "
                         "money for food, vaccines, or other expenses. Our priority is for homes in or near Istanbul.",
-            photo_url="https://hips.hearstapps.com/hmg-prod/images/beagle-dog-on-the-lawn-royalty-free-image-566943335-"
-                      "1556145876.jpg?crop=0.665xw:1.00xh;0.168xw,0&resize=1200:*",
+            photo_url="/uploads/pets/bruno-dm3.png",
             adoption_fee=00.00,
             status="available",
             category_id=cat_dog.id,
@@ -477,7 +471,7 @@ def seed_data():
                         "abandoned or kept on a chain. Adoption will be processed through a follow-up procedure and a "
                         "contract protecting animal rights, and we are looking for a stable family over the age of 25 "
                         "who can take on the emotional and financial responsibility for him.",
-            photo_url="https://www.evinemama.com/Data/Blog/47.jpg",
+            photo_url="/uploads/pets/cedar-dm4.png",
             adoption_fee=600.00,
             status="available",
             category_id=cat_dog.id,
@@ -500,8 +494,7 @@ def seed_data():
                         "approach. He would be happiest in a spacious area where he can run and play freely, "
                         "and he must not be kept on a chain. Please reach out with an introduction message; "
                         "we will not respond to other types of messages.",
-            photo_url="https://cdn.myikas.com/images/d4bedea6-e7cc-46e3-8364-038d94f8230e/20c32bea-708d-47f7-88a4-c0c2d"
-                      "ec321e6/image_1080.webp",
+            photo_url="/uploads/pets/cloud-dm5.png",
             adoption_fee=00.00,
             status="available",
             category_id=cat_dog.id,
@@ -520,8 +513,7 @@ def seed_data():
             description="She is a 1.5-year-old, adorable white female budgie. She is very tame and comfortable "
                         "being handled. She is currently waiting for a new, loving owner. Please reach out "
                         "if you are interested.",
-            photo_url="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVSZJeWhMh8E4FlGuIUKeVjJ9jjuRUAkH9YW50YJY"
-                      "_pyMB9WX0GeNTt_I&s=10",
+            photo_url="/uploads/pets/pearl-b1.png",
             adoption_fee=00.00,
             status="adopted",
             category_id=cat_bird.id,
@@ -539,7 +531,7 @@ def seed_data():
             energy_level="medium",
             description="This gentle and hand-tamed 2-year-old cockatiel loves to whistle and enjoys spending time "
                         "outside of the cage with his human companion..",
-            photo_url="https://upload.wikimedia.org/wikipedia/commons/2/2c/Calopsita_jade_2.jpg",
+            photo_url="/uploads/pets/sunny-b2.png",
             adoption_fee=00.00,
             status="available",
             category_id=cat_bird.id,
@@ -557,7 +549,7 @@ def seed_data():
             energy_level="high",
             description="This energetic and friendly 1-year-old parrot is looking for a loving home where he can chirp "
                         "and play all day.",
-            photo_url="https://exoticdirect.co.uk/wp-content/uploads/2025/01/Colourful-Parrot-Names.png",
+            photo_url="/uploads/pets/sky-b3.png",
             adoption_fee=00.00,
             status="available",
             category_id=cat_bird.id,
@@ -575,7 +567,7 @@ def seed_data():
             energy_level="high",
             description="A vibrant and affectionate 6-month-old lovebird, ready to bring joy and personality to a new,"
                         " caring family.",
-            photo_url="https://upload.wikimedia.org/wikipedia/commons/7/75/Wet_Lovebird.JPG",
+            photo_url="/uploads/pets/rio-b4.png",
             adoption_fee=00.00,
             status="available",
             category_id=cat_bird.id,
@@ -593,7 +585,7 @@ def seed_data():
             energy_level="low",
             description="This beautiful, young canary has a wonderful singing voice and would make a peaceful, cheerful "
                         "addition to any home.",
-            photo_url="https://www.harrisonsbirdfoods.com/wp-content/uploads/2025/05/canary_perched1.webp",
+            photo_url="/uploads/pets/luna-b5.png",
             adoption_fee=00.00,
             status="available",
             category_id=cat_bird.id,
@@ -610,8 +602,7 @@ def seed_data():
             size="small",
             energy_level="low",
             description="This calm and beautiful 1-year-old goldfish is looking for a spacious new tank to swim in.",
-            photo_url="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSC5dbynjtIkVnBO2wCub6APKhxkDDVS0xnVIk2"
-                      "thsuiQ&s=10",
+            photo_url="/uploads/pets/bubbles-f1.png",
             adoption_fee=00.00,
             status="pending",
             category_id=cat_fish.id,
@@ -629,7 +620,7 @@ def seed_data():
             energy_level="low",
             description="With his vibrant colors and elegant fins, this 6-month-old betta fish is ready to be the "
                         "centerpiece of a peaceful aquarium.",
-            photo_url="https://foto.akvaryum.com/fotolar/231818/130320260316231.jpg",
+            photo_url="/uploads/pets/finny-f2.png",
             adoption_fee=00.00,
             status="available",
             category_id=cat_fish.id,
@@ -647,7 +638,7 @@ def seed_data():
             energy_level="low",
             description="This active and schooling 1-year-old neon tetra would love to join a community tank and add a "
                         "splash of color to your home.",
-            photo_url="https://aquaist.com/wp-content/uploads/2018/09/Neon-Tetra.jpg",
+            photo_url="/uploads/pets/flash-f3.png",
             adoption_fee=00.00,
             status="available",
             category_id=cat_fish.id,
@@ -665,7 +656,7 @@ def seed_data():
             energy_level="low",
             description="A hardy and social 8-month-old molly, perfect for both beginners and experienced fish keepers "
                         "looking for a cheerful companion.",
-            photo_url="https://aquadesign.pk/wp-content/uploads/2025/04/1-25-300x300.webp",
+            photo_url="/uploads/pets/shadow-f4.png",
             adoption_fee=00.00,
             status="available",
             category_id=cat_fish.id,
@@ -683,8 +674,7 @@ def seed_data():
             energy_level="low",
             description="This graceful and distinctive 2-year-old angelfish is looking for a large, well-maintained "
                         "tank to showcase its majestic swimming style.",
-            photo_url="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRd9DB23_qS-1TKSKUMK52hLMd9WjCc9U9VAH1j-"
-                      "hYKtM2s-ncrsO433iI&s=10",
+            photo_url="/uploads/pets/goldie-f5.png",
             adoption_fee=00.00,
             status="available",
             category_id=cat_fish.id,
@@ -702,7 +692,7 @@ def seed_data():
             energy_level="high",
             description="This curious and active 6-month-old hamster is looking for a cozy home with plenty of space to "
                         "burrow and play.",
-            photo_url="https://static.ticimax.cloud/14166/uploads/blog/gonzales-hamster-99e4.jpg",
+            photo_url="/uploads/pets/nibbles-o1.png",
             adoption_fee=00.00,
             status="adopted",
             category_id=cat_other.id,
@@ -720,7 +710,7 @@ def seed_data():
             energy_level="high",
             description="This soft and gentle 1-year-old rabbit loves to hop around and is searching for a loving "
                         "family that can provide plenty of hay and affection.",
-            photo_url="https://www.orangepet.in/cdn/shop/articles/close-up-rabbit-field_1024x.jpg?v=1763017572",
+            photo_url="/uploads/pets/cotton-o2.png",
             adoption_fee=00.00,
             status="available",
             category_id=cat_other.id,
@@ -738,7 +728,7 @@ def seed_data():
             energy_level="high",
             description="This social and vocal 8-month-old guinea pig is a perfect companion who enjoys snacking on"
                         " fresh vegetables and cuddling with his owners.",
-            photo_url="https://upload.wikimedia.org/wikipedia/commons/3/30/George_the_amazing_guinea_pig.jpg",
+            photo_url="/uploads/pets/peanut-o3.png",
             adoption_fee=00.00,
             status="available",
             category_id=cat_other.id,
@@ -756,8 +746,7 @@ def seed_data():
             energy_level="high",
             description="TThis friendly and calm 1-year-old hen is looking for a safe, spacious coop with outdoor "
                         "access where she can spend her days foraging happily.",
-            photo_url="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSO0GVBnX_E5yWOnVv3bc-phJ00cy_eR88WdwTdc"
-                      "KszmQ&s=10",
+            photo_url="/uploads/pets/mia-o4.png",
             adoption_fee=700.00,
             status="available",
             category_id=cat_other.id,
@@ -775,8 +764,7 @@ def seed_data():
             energy_level="low",
             description="TThis peaceful and observant 3-year-old turtle is looking for a new owner who can provide "
                         "a clean, well-equipped habitat and the long-term care she needs.",
-            photo_url="https://upload.wikimedia.org/wikipedia/commons/3/3d/Eastern_Box_Turtle%2C_North_Carolina%2"
-                      "C_US_imported_from_iNaturalist_photo_71168521_%28cropped%29.jpg",
+            photo_url="/uploads/pets/shelly-o5.png",
             adoption_fee=00.00,
             status="available",
             category_id=cat_other.id,
