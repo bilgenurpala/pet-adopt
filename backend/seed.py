@@ -6,13 +6,11 @@ from app.database import SessionLocal
 from app.models import User, Category, Pet, AdoptionApplication, Favorite
 from sqlalchemy import text
 
-# Configure logging to track the process in the terminal
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
 def seed_data():
-    # Initialize the database session
     db = SessionLocal()
 
     try:
@@ -73,7 +71,6 @@ def seed_data():
 
         logger.info("3. Creating pets...")
 
-        #cf. is short for cat female and cm for cat male
         pet_cf1 = Pet(
             name="Princess",
             species="cat",
@@ -285,7 +282,6 @@ def seed_data():
             is_approved=True
         )
 
-        #df is short for dog female and dm for dog male
 
         pet_df1 = Pet(
             name="Shila",
@@ -513,7 +509,6 @@ def seed_data():
             is_approved=True
         )
 
-        #birds
         pet_b1 = Pet(
             name="Pearl",
             species="bird",
@@ -606,7 +601,6 @@ def seed_data():
             is_approved=True
         )
 
-        #fish
         pet_f1 = Pet(
             name="Bubbles",
             species="fish",
@@ -698,7 +692,6 @@ def seed_data():
             is_approved=True
         )
 
-        #other
         pet_o1 = Pet(
             name="Nibbles",
             species="other",
@@ -805,7 +798,6 @@ def seed_data():
 
         logger.info("4. Creating adoption applications and favorites...")
 
-        #a. is for approved, c is for completed, p for pending, r for rejected
         adap_a1 = AdoptionApplication(
             user_id=user_3.id,
             pet_id=pet_cf1.id,

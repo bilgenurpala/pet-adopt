@@ -9,31 +9,22 @@ from alembic import context
 from dotenv import load_dotenv
 
 script_location = alembic
-# Append the current working directory to sys.path
 sys.path.append(os.getcwd())
 
-# Import Base and models to ensure Alembic detects the schema
 from app.database import Base
 import app.models
 
-# Load environment variables from .env file
 load_dotenv()
 
-# This is the Alembic Config object, which provides
-# access to the values within the .ini file in use.
 config = context.config
 
-# Override the sqlalchemy.url with the DATABASE_URL from .env
 db_url = os.getenv("DATABASE_URL")
 if db_url is not None:
     config.set_main_option("sqlalchemy.url", db_url)
 
-# Interpret the config file for Python logging.
-# This line sets up loggers basically.
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# Add your model's MetaData object here for 'autogenerate' support
 target_metadata = Base.metadata
 
 def run_migrations_offline() -> None:
