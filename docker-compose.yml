@@ -17,5 +17,49 @@ services:
       timeout: 5s
       retries: 10
 
+  migrate:
+    build:
+      context: ./backend
+    container_name: petadopt-migrate
+    command: sh -c "alembic upgrade head && python seed.py"
+    environment:
+      DATABASE_URL: postgresql+psycopg2://petadopt:petadopt@db:5432/petadopt
+      SECRET_KEY: ${SECRET_KEY:-dev-insecure-change-me}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  backend:
+    build:
+      context: ./backend
+    container_name: petadopt-backend
+    environment:
+      DATABASE_URL: postgresql+psycopg2://petadopt:petadopt@db:5432/petadopt
+      SECRET_KEY: ${SECRET_KEY:-dev-insecure-change-me}
+    ports:
+      - "8000:8000"
+    volumes:
+      - petadopt_uploads:/app/uploads
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  ai:
+    build:
+      context: ./ai
+    container_name: petadopt-ai
+    environment:
+      DATABASE_URL: postgresql+psycopg2://petadopt:petadopt@db:5432/petadopt
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:?ANTHROPIC_API_KEY gerekli - repo kokune .env koy}
+    ports:
+      - "8001:8001"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
 volumes:
   petadopt_pgdata:
+  petadopt_uploads:
