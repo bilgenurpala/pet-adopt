@@ -71,6 +71,7 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Icon(Icons.person, size: 52, color: AppColors.primary),
             ),
             const SizedBox(height: 16),
+
             if (authProvider.isLoading && user == null)
               const Center(child: CircularProgressIndicator())
             else ...[
@@ -113,6 +114,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ],
             ],
+
             if (authProvider.errorMessage != null) ...[
               const SizedBox(height: 16),
               Padding(
@@ -124,7 +126,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
             ],
+
             const SizedBox(height: 28),
+
             _ProfileTile(
               icon: Icons.favorite_outline,
               title: 'Favorite Pets',
@@ -133,25 +137,20 @@ class _ProfilePageState extends State<ProfilePage> {
                 context.push(RouteNames.favorites);
               },
             ),
+
             const SizedBox(height: 12),
+
             _ProfileTile(
-              icon: Icons.pets_outlined,
-              title: 'My Pet Listings',
-              subtitle: 'View pets you listed for adoption',
+              icon: Icons.dashboard_customize_outlined,
+              title: 'My Activity',
+              subtitle: 'View your listings and adoption applications',
               onTap: () {
-                context.push(RouteNames.myPetListings);
+                context.push(RouteNames.myActivity);
               },
             ),
+
             const SizedBox(height: 12),
-            _ProfileTile(
-              icon: Icons.assignment_outlined,
-              title: 'Adoption Applications',
-              subtitle: 'Track your adoption requests',
-              onTap: () {
-                context.push(RouteNames.adoptionApplications);
-              },
-            ),
-            const SizedBox(height: 12),
+
             _ProfileTile(
               icon: Icons.info_outline,
               title: 'About Pet Adoption',
@@ -174,7 +173,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 );
               },
             ),
+
             const SizedBox(height: 12),
+
             _ProfileTile(
               icon: Icons.contact_support_outlined,
               title: 'Contact',
@@ -183,7 +184,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 context.push(RouteNames.contact);
               },
             ),
+
             const SizedBox(height: 12),
+
             _ProfileTile(
               icon: Icons.settings_outlined,
               title: 'Settings',
@@ -192,7 +195,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 context.push(RouteNames.settings);
               },
             ),
+
             const SizedBox(height: 12),
+
             _ProfileTile(
               icon: Icons.logout,
               title: 'Sign Out',
