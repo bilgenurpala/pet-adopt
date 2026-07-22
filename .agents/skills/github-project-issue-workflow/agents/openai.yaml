@@ -1,0 +1,4 @@
+interface:
+  display_name: "GitHub Project Issue Workflow"
+  short_description: "Turn project issues into scoped delivery plans"
+  default_prompt: "Use $github-project-issue-workflow to turn this GitHub Project issue into an implementation and PR workflow."

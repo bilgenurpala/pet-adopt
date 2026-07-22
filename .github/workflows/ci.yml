@@ -36,3 +36,17 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ci-not-used
           DATABASE_URL: postgresql+psycopg2://ci:ci@localhost:5432/ci
+
+  admin-frontend-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter test test/features/admin
