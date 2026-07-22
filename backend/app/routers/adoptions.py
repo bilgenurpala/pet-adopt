@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, Query, status
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.core.deps import get_current_user, require_admin
 from app.core.pagination import PaginationParams, paginate
@@ -8,6 +8,7 @@ from app.models.adoption_application import AdoptionApplication
 from app.models.enums import ApplicationStatus
 from app.models.user import User
 from app.schemas.adoption import (
+    AdminApplicationOut,
     AdoptionApplicationCreate,
     AdoptionApplicationOut,
     AdoptionApplicationStatusUpdate,
@@ -31,16 +32,22 @@ def create_application(
     )
 
 
-@router.get("", response_model=Page[AdoptionApplicationOut])
+@router.get("")
 def list_applications(
     db: Session = Depends(get_db),
     pagination: PaginationParams = Depends(),
     current_user: User = Depends(get_current_user),
     application_status: ApplicationStatus | None = Query(None, alias="status"),
 ):
+    is_admin_user = pet_service.is_admin(current_user)
     query = db.query(AdoptionApplication)
 
-    if not pet_service.is_admin(current_user):
+    if is_admin_user:
+        query = query.options(
+            joinedload(AdoptionApplication.user),
+            joinedload(AdoptionApplication.pet),
+        )
+    else:
         query = query.filter(AdoptionApplication.user_id == current_user.id)
 
     if application_status is not None:
@@ -53,7 +60,10 @@ def list_applications(
         .limit(pagination.per_page)
         .all()
     )
-    return paginate(items, total, pagination)
+
+    schema = AdminApplicationOut if is_admin_user else AdoptionApplicationOut
+    serialized = [schema.model_validate(item) for item in items]
+    return paginate(serialized, total, pagination)
 
 
 @router.get("/{application_id}", response_model=AdoptionApplicationOut)
