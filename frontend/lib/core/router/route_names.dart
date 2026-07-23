@@ -13,7 +13,6 @@ abstract final class RouteNames {
 
   static const String aiRecommendation = '/ai-recommendation';
 
-  static const String settings = '/settings';
   static const String admin = '/admin';
   static const String contact = '/contact';
 }

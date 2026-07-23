@@ -15,7 +15,7 @@ matching.
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![Claude](https://img.shields.io/badge/Claude_AI-D97757?style=for-the-badge)
 
-[Features](#-features) · [Architecture](#-architecture) · [Component Guides](#-component-guides) · [Quick Start](#-quick-start) · [API](#-api-and-permissions) · [Testing](#-testing-and-quality) · [Project Board](https://github.com/users/bilgenurpala/projects/8/views/1)
+[Features](#-features) · [Architecture](#-architecture) · [Component Guides](#-component-guides) · [Quick Start](#-quick-start) · [API](#-api-and-permissions) · [Demo](#-demo-video) · [Testing](#-testing-and-quality) · [Project Board](https://github.com/users/bilgenurpala/projects/8/views/1)
 
 </div>
 
@@ -26,8 +26,7 @@ matching.
 | Experience | Capabilities |
 |---|---|
 | **Adopters** | Register and sign in, browse approved pets, search and filter, manage favourites and track adoption applications |
-| **Pet owners** | Create listings, upload photos and manage their own pets while approval rules protect public visibility |
-| **Administrators** | Review pending listings, manage application status, control user roles and monitor platform statistics |
+| **Administrators** | Create and manage pet listings, review pending listings, manage application status, control user roles and monitor platform statistics |
 | **AI assistant** | Generate listing descriptions, recommend real adoptable pets, classify pet images and answer conversational requests |
 | **Platform** | JWT authentication, RFC 7807 errors, pagination, OpenAPI 3.1, Docker Compose, seeded data and automated QA |
 
@@ -200,6 +199,12 @@ errors use the RFC 7807 `application/problem+json` format.
 Prompts live in `ai/app/prompts/` as versioned modules. Every prompt exports a
 `PROMPT_VERSION`, and the AI client retries only transient failures such as
 rate limits, server errors and network interruptions.
+
+## 🎬 Demo Video
+
+A full walkthrough of the adopter flow, the AI assistant and the admin panel:
+
+[![Watch the demo on YouTube](https://img.shields.io/badge/YouTube-Watch_the_demo-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/xPZo9AKaSOs)
 
 ## 🧪 Testing and Quality
 

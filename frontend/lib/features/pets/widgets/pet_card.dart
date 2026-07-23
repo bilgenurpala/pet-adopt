@@ -13,160 +13,214 @@ class PetCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isAvailable = pet.status.toLowerCase() == 'available';
+    final normalizedStatus = pet.status.trim().toLowerCase();
+    final isAvailable = normalizedStatus == 'available';
 
     return Card(
+      margin: EdgeInsets.zero,
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => PetDetailPage(pet: pet)),
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(builder: (_) => PetDetailPage(pet: pet)),
           );
         },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Stack(
-              children: [
-                Container(
-                  height: 145,
-                  width: double.infinity,
-                  color: AppColors.primaryLight,
-                  child: pet.photoUrl != null
-                      ? Image.network(
-                          pet.photoUrl!,
-                          fit: BoxFit.cover,
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) {
-                              return child;
-                            }
+            Expanded(
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  _PetImage(photoUrl: pet.photoUrl),
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: Consumer<FavoritesProvider>(
+                      builder: (context, favoritesProvider, _) {
+                        final isFavorite = favoritesProvider.isFavorite(pet.id);
 
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          },
-                          errorBuilder: (context, error, stackTrace) {
-                            return const _PetImagePlaceholder();
-                          },
-                        )
-                      : const _PetImagePlaceholder(),
-                ),
-                Positioned(
-                  top: 8,
-                  right: 8,
-                  child: Consumer<FavoritesProvider>(
-                    builder: (context, favoritesProvider, _) {
-                      final isFavorite = favoritesProvider.isFavorite(pet.id);
-
-                      return Material(
-                        color: Colors.white,
-                        shape: const CircleBorder(),
-                        elevation: 2,
-                        child: SizedBox(
-                          width: 40,
-                          height: 40,
-                          child: IconButton(
-                            padding: EdgeInsets.zero,
-                            tooltip: isFavorite
-                                ? 'Remove from favorites'
-                                : 'Add to favorites',
-                            onPressed: () async {
-                              await favoritesProvider.toggleFavorite(pet);
-                            },
-                            iconSize: 21,
-                            icon: Icon(
-                              isFavorite
-                                  ? Icons.favorite
-                                  : Icons.favorite_border,
-                              color: isFavorite
-                                  ? AppColors.favorite
-                                  : AppColors.textSecondary,
+                        return Material(
+                          color: Colors.white,
+                          elevation: 2,
+                          shape: const CircleBorder(),
+                          child: SizedBox(
+                            width: 38,
+                            height: 38,
+                            child: IconButton(
+                              padding: EdgeInsets.zero,
+                              iconSize: 20,
+                              tooltip: isFavorite
+                                  ? 'Remove from favorites'
+                                  : 'Add to favorites',
+                              onPressed: () async {
+                                await favoritesProvider.toggleFavorite(pet);
+                              },
+                              icon: Icon(
+                                isFavorite
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
+                                color: isFavorite
+                                    ? AppColors.favorite
+                                    : AppColors.textSecondary,
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      pet.name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: AppColors.textPrimary,
-                        fontWeight: FontWeight.w700,
-                      ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 10, 12, 11),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    pet.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w700,
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      pet.breed,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    pet.breed,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                      fontSize: 12,
                     ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.pets,
-                          size: 15,
-                          color: AppColors.primaryDark,
+                  ),
+                  const SizedBox(height: 7),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.pets_outlined,
+                        size: 14,
+                        color: AppColors.primaryDark,
+                      ),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          _capitalize(pet.species),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: AppColors.textSecondary,
+                                fontSize: 12,
+                              ),
                         ),
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: Text(
-                            pet.species,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context).textTheme.bodySmall
-                                ?.copyWith(color: AppColors.textSecondary),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 9,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isAvailable
+                              ? Colors.green.shade50
+                              : Colors.orange.shade50,
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Text(
+                          isAvailable
+                              ? 'Available'
+                              : _statusLabel(normalizedStatus),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: isAvailable
+                                ? AppColors.success
+                                : AppColors.warning,
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
-                      ],
-                    ),
-                    const Spacer(),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
                       ),
-                      decoration: BoxDecoration(
-                        color: isAvailable
-                            ? Colors.green.shade50
-                            : Colors.orange.shade50,
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                      child: Text(
-                        isAvailable ? 'Available for Adoption' : pet.status,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: isAvailable
-                              ? AppColors.success
-                              : AppColors.warning,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  static String _capitalize(String value) {
+    final trimmedValue = value.trim();
+
+    if (trimmedValue.isEmpty) {
+      return 'Pet';
+    }
+
+    return '${trimmedValue[0].toUpperCase()}'
+        '${trimmedValue.substring(1).toLowerCase()}';
+  }
+
+  static String _statusLabel(String status) {
+    switch (status) {
+      case 'adopted':
+        return 'Adopted';
+      case 'pending':
+        return 'Pending';
+      case 'approved':
+        return 'Approved';
+      case 'rejected':
+        return 'Rejected';
+      default:
+        return _capitalize(status);
+    }
+  }
+}
+
+class _PetImage extends StatelessWidget {
+  const _PetImage({required this.photoUrl});
+
+  final String? photoUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    final url = photoUrl?.trim();
+
+    if (url == null || url.isEmpty) {
+      return const _PetImagePlaceholder();
+    }
+
+    return Image.network(
+      url,
+      width: double.infinity,
+      height: double.infinity,
+      fit: BoxFit.cover,
+      alignment: Alignment.center,
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) {
+          return child;
+        }
+
+        return Container(
+          color: AppColors.primaryLight,
+          alignment: Alignment.center,
+          child: const SizedBox(
+            width: 22,
+            height: 22,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+        );
+      },
+      errorBuilder: (context, error, stackTrace) {
+        return const _PetImagePlaceholder();
+      },
     );
   }
 }
@@ -176,8 +230,10 @@ class _PetImagePlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Icon(Icons.pets, size: 56, color: AppColors.primary),
+    return Container(
+      color: AppColors.primaryLight,
+      alignment: Alignment.center,
+      child: const Icon(Icons.pets, size: 48, color: AppColors.primary),
     );
   }
 }

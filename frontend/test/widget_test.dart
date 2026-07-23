@@ -6,13 +6,19 @@ import 'package:frontend/core/widgets/main_navigation.dart';
 import 'package:frontend/features/pets/providers/favorites_provider.dart';
 import 'package:frontend/features/pets/providers/pet_provider.dart';
 
+import 'support/fake_pet_repository.dart';
+
 void main() {
   testWidgets('Application starts successfully', (WidgetTester tester) async {
     await tester.pumpWidget(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => PetProvider()),
-          ChangeNotifierProvider(create: (_) => FavoritesProvider()),
+          ChangeNotifierProvider(
+            create: (_) => PetProvider(repository: FakePetRepository()),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => FavoritesProvider(repository: FakePetRepository()),
+          ),
         ],
         child: const MaterialApp(home: MainNavigation()),
       ),
