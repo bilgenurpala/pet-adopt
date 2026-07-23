@@ -1,76 +1,127 @@
-# PetAdopt
+<div align="center">
 
-VBT Internship 2026 project. A pet adoption platform built as a modern take
-on the Swagger Petstore API: a FastAPI backend, a separate Claude-powered AI
-service, and a Flutter client.
+# 🐾 PetAdopt
 
-The original Petstore domain was a shop. We pivoted it to adoption, which
-changed the meaning of most of the model: `price` became an optional
-`adoption_fee`, orders became adoption applications, and users can post
-their own listings for an admin to approve.
+### AI-powered pet adoption across web and mobile
 
-## Repository layout
+PetAdopt turns the classic Swagger Petstore into a complete adoption platform
+with real listings, role-based workflows, admin moderation and AI-assisted pet
+matching.
 
-```
-backend/            Pet adoption API (FastAPI + PostgreSQL) — see backend/README.md
-ai/                 AI service (FastAPI + Claude) — see ai/README.md
-frontend/           Flutter client (web and mobile) — see frontend/README.md
-qa/                 Postman/Newman API collection and environment
-.github/workflows/  CI (pytest on every push and pull request)
-docker-compose.yml  Full stack: postgres + migrate + backend + ai
-```
+[![CI](https://img.shields.io/github/actions/workflow/status/bilgenurpala/pet-adopt/ci.yml?branch=main&style=for-the-badge&label=CI)](https://github.com/bilgenurpala/pet-adopt/actions/workflows/ci.yml)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
+![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL_16-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Claude](https://img.shields.io/badge/Claude_AI-D97757?style=for-the-badge)
 
-The two Python services are deliberately separate: the AI service can be
-restarted, rate-limited or taken down without affecting the main API. They
-share the database but not their models — the AI service reads the database
-directly, read-only.
+[Features](#-features) · [Architecture](#-architecture) · [Quick Start](#-quick-start) · [API](#-api-and-permissions) · [Testing](#-testing-and-quality) · [Project Board](https://github.com/users/bilgenurpala/projects/8/views/1)
 
-## Tech stack
+</div>
 
-| Area | Choice |
+---
+
+## ✨ Features
+
+| Experience | Capabilities |
 |---|---|
-| API | FastAPI, Pydantic v2 |
-| Database | PostgreSQL 16, SQLAlchemy 2, Alembic |
-| Auth | JWT (access + refresh), bcrypt hashing, role-based access (`user` / `admin`) |
-| AI | Anthropic Claude, versioned prompt modules, tenacity retries |
-| Client | Flutter, Dio, Riverpod-style providers, go_router |
-| Errors | RFC 7807 Problem Details (`application/problem+json`) |
-| QA / CI | pytest (isolated SQLite + mocked LLM), Postman/Newman, GitHub Actions |
+| **Adopters** | Register and sign in, browse approved pets, search and filter, manage favourites and track adoption applications |
+| **Pet owners** | Create listings, upload photos and manage their own pets while approval rules protect public visibility |
+| **Administrators** | Review pending listings, manage application status, control user roles and monitor platform statistics |
+| **AI assistant** | Generate listing descriptions, recommend real adoptable pets, classify pet images and answer conversational requests |
+| **Platform** | JWT authentication, RFC 7807 errors, pagination, OpenAPI 3.1, Docker Compose, seeded data and automated QA |
 
-## Getting started
+### Why this is more than a Petstore clone
 
-### Quick start — full stack in one command
+The original Petstore shop model was redesigned around adoption. Prices became
+optional adoption fees, orders became adoption applications, and user-created
+listings now pass through an admin approval workflow. AI recommendations use
+real, approved and available pets from PostgreSQL rather than fabricated data.
 
-Requires Docker Desktop. From the repository root, create a `.env` from the
-example and fill in the two secrets:
+## 🏗 Architecture
+
+```mermaid
+flowchart LR
+    Client["Flutter Web & Mobile"]
+    API["FastAPI Backend<br/>:8000"]
+    AI["AI Service<br/>:8001"]
+    DB[("PostgreSQL 16")]
+    Claude["Anthropic Claude"]
+    Bootstrap["Alembic + Seed"]
+
+    Client -->|"JWT + REST"| API
+    Client -->|"AI requests"| AI
+    API -->|"SQLAlchemy"| DB
+    AI -->|"Read-only pet data"| DB
+    AI -->|"Prompted inference"| Claude
+    Bootstrap --> DB
+```
+
+The backend and AI service are deliberately independent. The AI service can be
+restarted, rate-limited or unavailable without taking down the adoption API.
+Both services use the same database, while the AI service keeps its access
+read-only and does not import backend models.
+
+### Technology stack
+
+| Layer | Technology |
+|---|---|
+| Client | Flutter, Provider, Dio, go_router, secure storage |
+| Backend | Python 3.12, FastAPI, Pydantic v2, SQLAlchemy 2 |
+| Database | PostgreSQL 16, Alembic migrations |
+| Authentication | JWT access and refresh tokens, bcrypt, role-based access |
+| AI | Anthropic Claude, versioned prompts, tenacity retries |
+| Quality | pytest, Flutter tests, Postman/Newman, GitHub Actions |
+| Runtime | Docker Compose |
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Docker Desktop
+- An Anthropic API key
+
+### Run the full stack
+
+Create the root environment file:
 
 ```bash
 cp .env.example .env
-# ANTHROPIC_API_KEY=sk-ant-...
-# SECRET_KEY=<generate with: python -c "import secrets; print(secrets.token_hex(32))">
 ```
 
-Then bring the whole stack up:
+Set the required secrets:
+
+```env
+ANTHROPIC_API_KEY=sk-ant-...
+SECRET_KEY=replace-with-a-long-random-secret
+```
+
+Start PostgreSQL, migrations, seed, backend and AI services:
 
 ```bash
 docker compose up --build
 ```
 
-This starts PostgreSQL, runs a one-shot `migrate` service (`alembic upgrade
-head` then `python seed.py`), and — only after migration and seed succeed —
-starts the backend and the AI service:
+| Service | URL |
+|---|---|
+| Backend API | http://localhost:8000 |
+| Swagger UI | http://localhost:8000/docs |
+| AI service | http://localhost:8001 |
+| AI Swagger UI | http://localhost:8001/docs |
 
-- Backend API: http://localhost:8000  (docs at `/docs`)
-- AI service:  http://localhost:8001  (docs at `/docs`)
+Run the Flutter client in a second terminal:
 
-`seed.py` truncates the tables before inserting, so every `up` gives you the
-same known dataset.
+```bash
+cd frontend
+flutter pub get
+flutter run -d chrome
+```
 
-### Running the services individually (for development)
+<details>
+<summary><strong>Run services individually</strong></summary>
 
-Bring up only the database with `docker compose up -d db`, then run each
-service from its own folder against `localhost:5432`. Each service reads its
-own `.env` (see the `.env.example` files):
+Start only PostgreSQL with `docker compose up -d db`, then run each service
+from its own directory:
 
 ```bash
 cd backend
@@ -86,189 +137,167 @@ pip install -r requirements.txt
 python -m uvicorn app.main:app --reload --port 8001
 ```
 
-### Flutter client
+</details>
 
-```bash
-cd frontend
-flutter pub get
-flutter run -d chrome
-```
-
-## Authentication and scope
-
-Auth is intentionally scoped to **register, login, refresh, and admin
-protection** — no email verification, password reset or OAuth.
-
-- `POST /auth/register` creates a `user`; the first admins come from the seed.
-- `POST /auth/login` returns a short-lived **access token** (15 min) and a
-  longer-lived **refresh token** (7 days).
-- `POST /auth/refresh` exchanges a valid refresh token for a new access token.
-- Protected routes depend on the current user; admin-only routes depend on a
-  `require_admin` guard.
-
-The refresh token is **stateless** but carries a `jti` (token id), so a
-revocation list can be added later without changing the token format. The
-user's **role is read from the database on every request**, not trusted from
-the token — a demoted admin loses access immediately.
-
-## Permission matrix
-
-| Resource | Public (no token) | Authenticated user | Admin only |
-|---|---|---|---|
-| Auth | register, login, refresh | — | — |
-| Pets | list, get (approved only) | create, update/delete own, `/mine`, add photo | `/pending`, approve |
-| Categories | list, get | — | create, update, delete |
-| Adoptions | — | apply, list/get own | change status |
-| Users | — | `/me` | list, get, create, update, change role, delete |
-| Favorites | — | add, list, remove | — |
-
-A record the caller is not allowed to **see** returns `404` (so its
-existence is not leaked); a record they may see but not **act on** returns
-`403`.
-
-## AI service endpoints
-
-| Endpoint | Purpose |
-|---|---|
-| `POST /generate-description` | Writes an adoption listing from a pet's attributes |
-| `POST /recommend-pet` | Picks the best match for a free-text description of the adopter's lifestyle |
-| `POST /classify-image` | Identifies species and guesses breed from a photo |
-| `POST /assistant` | Single chat entry point; routes intent internally to the functions above |
-
-`/assistant` is stateless: the client sends the full `messages` history
-(text plus an optional image) on every request; nothing is stored
-server-side. Recommendations always return a **real pet with its real
-`photo_url`** — no generated images.
-
-`/recommend-pet` reads pets directly from the database and only considers
-listings that are `available` **and** approved, so unapproved user listings
-never surface in recommendations. This is the same public-visibility rule
-the backend enforces on `/pets` — it deliberately lives in **both services**.
-
-Prompts live in `ai/app/prompts/` as versioned modules (`description_v1`,
-`recommend_v1`, `classify_v1`, `assistant_v1`, `router_v1`). Each exports a
-`PROMPT_VERSION`, so a response can always be traced to the prompt that
-produced it. Ages below one year are rendered as "approximately N months" in
-code before the prompt is built, because "0.5 years old" reads badly and
-models echo it back.
-
-## Design decisions
-
-- **Custom retry, not the SDK default.** The AI client retries only transient
-  errors (429 / 5xx / network) with exponential backoff, and never retries
-  4xx like 400/401. Retry counts and delays are configurable via settings.
-- **Role from the database, not the token.** Authorization reads the live
-  role on each request, so revoking admin takes effect immediately.
-- **Invisible record → 404, unauthorized action → 403.** Hiding existence
-  from callers who shouldn't know a record exists; distinguishing that from a
-  genuine permission error.
-- **Stateless refresh token with a `jti`.** No server-side session store now,
-  but ready for revocation later without a format change.
-- **The AI service reads the database directly, read-only.** It never calls
-  the backend API, and shares the database without sharing models.
-- **`per_page`, not `size`.** The old pagination name `size` clashed with the
-  pet `size` filter, so pagination uses `page` / `per_page`.
-- **`age` and `adoption_fee` are serialized as strings.** They are
-  `Decimal` in the database; serializing as strings preserves precision that
-  a float round-trip would lose.
-- **Adoption pivot.** Orders became adoption applications; an approved
-  application moves the pet to `pending`, a completed one to `adopted`, and a
-  rejected one leaves it `available`.
-
-## Data model
-
-Five tables: `pet`, `category`, `user`, `adoption_application`, `favorites`.
-
-The field list is frozen in the data contract issue and is the single source
-of truth. Models, Pydantic schemas and Flutter types all follow it, and
-**any change to it must be discussed in that issue before implementation** —
-the three layers break independently otherwise.
-
-Details worth knowing without reading the contract:
-
-- `pet.age` is `decimal(3,1)`, not an integer, so young animals can be
-  represented (`0.5` = about six months).
-- `pet.owner_id` and `pet.is_approved` support user-submitted listings. A
-  listing from a regular user starts unapproved and is invisible to the
-  public until an admin approves it.
-- Defaults for `role`, `status` and `is_approved` are database defaults, so a
-  raw SQL insert succeeds without supplying them.
-- `favorites` uses a composite primary key, so the same user cannot favourite
-  the same pet twice.
-- Password hashing lives in the service layer (`app/core/security.py`).
-  Models store `password_hash` and nothing more.
-
-## Seed data
-
-`backend/seed.py` builds a realistic dataset: 35 pets across all five species
-with varied size and energy levels, 5 categories, 2 admins and 1 regular
-user, adoption applications covering all four statuses, and a few favourites.
-A handful of pets are `adopted` or `pending`, and a few are unapproved user
-listings, so every filter and permission path has something to exercise.
-
-Seed logins (local development only):
+### Local demo accounts
 
 | Role | Email | Password |
 |---|---|---|
-| admin | bilge@hotmail.com | Bilge1234 |
-| admin | arjin@outlook.com | Arjin2026 |
-| user | seda@gmail.com | Sedanur2002 |
+| Admin | `bilge@hotmail.com` | `Bilge1234` |
+| Admin | `arjin@outlook.com` | `Arjin2026` |
 
-## Testing
+The seed creates 35 pets across five species, five categories, adoption
+applications in every supported status, favourites and pending user listings.
+Running the seed resets the dataset to a known state.
 
-### Unit and integration tests (pytest)
+## 🔐 API and Permissions
 
-Both suites run without a real database or API key — the backend uses an
-in-memory SQLite fixture and the AI service mocks every LLM call, which is
-what keeps CI simple and fast.
+### Authentication flow
+
+- `POST /auth/register` creates a regular user.
+- `POST /auth/login` returns access and refresh tokens.
+- `POST /auth/refresh` rotates authentication tokens.
+- Access tokens expire after 15 minutes; refresh tokens expire after 7 days.
+- Roles are read from the database on every request, so demotion takes effect
+  immediately instead of waiting for a token to expire.
+
+### Permission matrix
+
+| Resource | Public | Authenticated user | Admin |
+|---|---|---|---|
+| Auth | Register, login, refresh | — | — |
+| Pets | List and view approved pets | Create, manage own listings, upload photos | Review pending pets, approve, delete |
+| Categories | List and view | — | Create, update, delete |
+| Adoptions | — | Apply, list and view own applications | View all, update status |
+| Users | — | View own profile | List, update roles, delete |
+| Favourites | — | Add, list, remove | — |
+
+Invisible records return `404` to avoid leaking their existence. Visible
+records that the caller cannot modify return `403`. Validation and service
+errors use the RFC 7807 `application/problem+json` format.
+
+### AI endpoints
+
+| Endpoint | Purpose |
+|---|---|
+| `POST /generate-description` | Generate a natural adoption listing from pet attributes |
+| `POST /recommend-pet` | Match adopter lifestyle text with a real, adoptable pet |
+| `POST /classify-image` | Identify species and estimate breed from an image |
+| `POST /assistant` | Route conversational requests to the appropriate AI capability |
+
+Prompts live in `ai/app/prompts/` as versioned modules. Every prompt exports a
+`PROMPT_VERSION`, and the AI client retries only transient failures such as
+rate limits, server errors and network interruptions.
+
+## 🧪 Testing and Quality
+
+The repository uses layered testing rather than relying on a single happy
+path.
+
+| Suite | Coverage | Command |
+|---|---|---|
+| Backend | API, permissions, pagination and adoption rules | `cd backend && pytest -q` |
+| AI | Routing, prompt output and mocked provider failures | `cd ai && pytest -q` |
+| Admin frontend | Provider state and critical admin widgets | `cd frontend && flutter test test/features/admin` |
+| Live API QA | Positive and negative seeded flows | Newman command below |
 
 ```bash
-cd backend && pytest -q      # SECRET_KEY must be set in the environment or backend/.env
-cd ai && pytest -q           # ANTHROPIC_API_KEY / DATABASE_URL can be any dummy value
-```
-
-### API collection (Newman)
-
-`qa/` holds a Postman collection that runs against a live, seeded API
-(bring the stack up first). It logs in, captures tokens into the environment,
-exercises the full CRUD and adoption flow, and has a negative folder covering
-401 / 403 / 404 / 409 / 422.
-
-```bash
-npm install -g newman newman-reporter-htmlextra
 newman run qa/petadopt.postman_collection.json \
   -e qa/petadopt.postman_environment.json \
-  -r cli,htmlextra --reporter-htmlextra-export qa/report.html
+  -r cli,htmlextra \
+  --reporter-htmlextra-export qa/report.html
 ```
 
-### CI
+GitHub Actions runs backend, AI and admin frontend test jobs for every pull
+request and push to `main`.
 
-`.github/workflows/ci.yml` runs both pytest suites on every push to `main`
-and every pull request, as two parallel jobs. Green is required.
+### QA evidence
 
-## Screenshots
+<table>
+  <tr>
+    <td width="50%" align="center"><strong>Seeded Docker stack</strong></td>
+    <td width="50%" align="center"><strong>Newman API report</strong></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/docker-up.png" alt="Docker Compose starting the seeded PetAdopt stack"></td>
+    <td><img src="docs/screenshots/newman-report.png" alt="Newman report with 30 requests and 51 passing assertions"></td>
+  </tr>
+</table>
 
-| | |
-|---|---|
-| Full stack up | ![docker compose up](docs/screenshots/docker-up.png) |
-| API docs — endpoints | ![swagger endpoints](docs/screenshots/api-docs-1.png) |
-| API docs — schemas | ![swagger schemas](docs/screenshots/api-docs-2.png) |
-| Newman report | ![newman](docs/screenshots/newman-report.png) |
+## 📚 OpenAPI Documentation
 
-## Conventions
+FastAPI publishes an OpenAPI 3.1 contract and interactive Swagger UI for the
+complete backend surface.
 
-- Work happens on a branch per issue, named `feature/issue-NN-slug` or
-  `fix/issue-NN-slug`. Nothing is committed directly to `main`.
-- Pull requests reference their issue with `Closes #NN`.
-- Commit messages follow Conventional Commits (`feat:`, `fix:`, `refactor:`,
-  `chore:`, `build:`, `ci:`, `test:`, `docs:`).
-- `.env` files are gitignored and must never be committed. The credentials in
-  this README are for local development only.
+<p align="center">
+  <img src="docs/screenshots/api-docs-1.png" alt="PetAdopt Swagger endpoint overview" width="900">
+</p>
 
-## Team
+<details>
+<summary><strong>View generated API schemas</strong></summary>
+
+<p align="center">
+  <img src="docs/screenshots/api-docs-2.png" alt="PetAdopt OpenAPI schemas" width="900">
+</p>
+
+</details>
+
+## 🧠 Key Design Decisions
+
+- **Real-data AI recommendations:** only approved, available pets can be
+  recommended.
+- **Live authorization:** user roles come from the database, not token claims.
+- **Privacy-aware errors:** invisible resources return `404`; forbidden actions
+  return `403`.
+- **Precision-preserving API:** decimal ages and adoption fees serialize as
+  strings.
+- **Stateless assistant:** the client sends conversation history with every
+  assistant request.
+- **Resilient AI calls:** only transient failures are retried with exponential
+  backoff.
+- **Traceable prompts:** every prompt module has an explicit version.
+
+## 🗂 Repository Structure
+
+```text
+pet-adopt/
+├── backend/             FastAPI adoption API, migrations and seed
+├── ai/                  Independent Claude-powered AI service
+├── frontend/            Flutter web and mobile client
+├── qa/                  Postman collection and QA plans
+├── docs/screenshots/    API, Docker and test evidence
+├── .agents/skills/      Reusable project workflow skill
+├── .github/workflows/   Continuous integration
+└── docker-compose.yml   Full-stack orchestration
+```
+
+Each application has its own setup and architecture guide:
+[Backend](backend/README.md) · [AI service](ai/README.md) ·
+[Flutter frontend](frontend/README.md).
+
+## 👥 Team
 
 | Area | Owner |
 |---|---|
-| Data layer — models, migrations, seed | Seda |
-| Service layer, AI service | Bilge |
-| Flutter client | Arjin, Seda |
+| Backend — models, migrations, seed, services and API | Bilge |
+| AI service, Docker and backend QA | Bilge |
+| Flutter client — admin panel | Bilge |
+| Flutter client — user-facing experience | Arjin |
+
+## 🤝 Workflow
+
+- Branches follow `feature/issue-NN-slug` or `fix/issue-NN-slug`.
+- Pull requests link their issue with `Closes #NN` only when all mandatory work
+  is complete.
+- Commits follow Conventional Commits.
+- Secrets stay in ignored `.env` files.
+- Project work is tracked on the
+  [PetAdopt GitHub Project](https://github.com/users/bilgenurpala/projects/8/views/1).
+
+---
+
+<div align="center">
+
+Built for the **VBT Internship 2026** program.
+
+</div>
