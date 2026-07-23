@@ -157,7 +157,6 @@ python -m uvicorn app.main:app --reload --port 8001
 |---|---|---|
 | Admin | `bilge@hotmail.com` | `Bilge1234` |
 | Admin | `arjin@outlook.com` | `Arjin2026` |
-| User | `seda@gmail.com` | `Sedanur2002` |
 
 The seed creates 35 pets across five species, five categories, adoption
 applications in every supported status, favourites and pending user listings.
