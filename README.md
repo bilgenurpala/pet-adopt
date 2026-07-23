@@ -14,7 +14,7 @@ their own listings for an admin to approve.
 ```
 backend/            Pet adoption API (FastAPI + PostgreSQL) — see backend/README.md
 ai/                 AI service (FastAPI + Claude) — see ai/README.md
-frontend/           Flutter client (web and mobile from one codebase)
+frontend/           Flutter client (web and mobile) — see frontend/README.md
 qa/                 Postman/Newman API collection and environment
 .github/workflows/  CI (pytest on every push and pull request)
 docker-compose.yml  Full stack: postgres + migrate + backend + ai
