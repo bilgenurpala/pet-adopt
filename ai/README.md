@@ -1,25 +1,53 @@
 # PetAdopt AI Service
 
-PetAdopt'un ilan açıklaması üretme, evcil hayvan önerme, fotoğraf sınıflandırma
-ve sohbet asistanı özelliklerini sağlayan bağımsız FastAPI servisidir.
+The independent PetAdopt AI API: a FastAPI service powered by Anthropic Claude
+for listing descriptions, lifestyle-based recommendations, image
+classification, and a conversational assistant.
 
-## Teknolojiler
+[![FastAPI](https://img.shields.io/badge/FastAPI-API-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
+[![Claude](https://img.shields.io/badge/Anthropic-Claude-D97757)](https://www.anthropic.com/claude)
+[![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 
-- FastAPI ve Pydantic v2
-- Anthropic Python SDK
-- Tenacity ile kontrollü retry
-- SQLAlchemy ile salt okunur pet sorguları
-- pytest ve mock LLM testleri
+## Architecture
 
-## Yerel kurulum
+```mermaid
+flowchart LR
+    Client["Flutter client"] --> Assistant["POST /assistant"]
+    Assistant --> Router["Intent router"]
+    Router --> Description["Description flow"]
+    Router --> Recommend["Recommendation flow"]
+    Router --> Classify["Image classification flow"]
+    Description --> Claude["Anthropic Claude"]
+    Classify --> Claude
+    Recommend --> Claude
+    Recommend --> DB[("PostgreSQL read-only")]
+```
 
-Python 3.12 önerilir. Komutları bu klasörün içinden çalıştırın:
+The AI service can be deployed, restarted, or rate-limited independently from
+the main backend. It reads eligible pets directly from PostgreSQL for
+recommendations but does not modify application data.
+
+## Tech stack
+
+| Area | Choice |
+|---|---|
+| API | FastAPI, Pydantic v2 |
+| LLM provider | Anthropic Claude |
+| Reliability | Tenacity retries for transient failures |
+| Pet catalogue | Read-only SQLAlchemy queries |
+| Prompts | Versioned Python modules |
+| Image input | Multipart uploads and base64 assistant content |
+| Tests | pytest with mocked LLM calls |
+
+## Getting started
+
+Python 3.12 is recommended. Run the following commands from this directory.
 
 ```bash
 python -m venv .venv
 ```
 
-Sanal ortamı etkinleştirin:
+Activate the environment and install the dependencies:
 
 ```bash
 # Windows PowerShell
@@ -27,15 +55,11 @@ Sanal ortamı etkinleştirin:
 
 # macOS / Linux
 source .venv/bin/activate
-```
 
-Bağımlılıkları yükleyin:
-
-```bash
 pip install -r requirements.txt
 ```
 
-`ai/.env` dosyasını oluşturun:
+Create `ai/.env`:
 
 ```env
 ANTHROPIC_API_KEY=your-api-key
@@ -46,8 +70,8 @@ LLM_WAIT_MAX=10
 CORS_ORIGINS=http://localhost:3000,http://localhost:8000
 ```
 
-Öneri özelliğinin gerçek ilanları okuyabilmesi için veritabanını proje kökünden
-hazırlayın:
+The recommendation endpoint needs a migrated and seeded PetAdopt database.
+Prepare it from the repository root:
 
 ```bash
 docker compose up -d db
@@ -57,7 +81,7 @@ python seed.py
 cd ../ai
 ```
 
-Servisi başlatın:
+Start the service:
 
 ```bash
 python -m uvicorn app.main:app --reload --port 8001
@@ -67,35 +91,68 @@ python -m uvicorn app.main:app --reload --port 8001
 - Swagger UI: http://localhost:8001/docs
 - Health check: http://localhost:8001/health
 
-## Endpointler
+## AI endpoints
 
-| Metot ve yol | Açıklama |
-|---|---|
-| `POST /generate-description` | Pet özelliklerinden sahiplendirme ilanı metni üretir |
-| `POST /recommend-pet` | Kullanıcının yaşam tarzına uygun, veritabanındaki gerçek bir peti önerir |
-| `POST /classify-image` | Yüklenen fotoğraftan tür ve olası cins bilgisi çıkarır |
-| `POST /assistant` | Mesajın niyetini belirleyip uygun AI akışına yönlendirir |
+| Endpoint | Input | Purpose |
+|---|---|---|
+| `POST /generate-description` | Pet attributes | Writes an adoption listing |
+| `POST /recommend-pet` | Free-text lifestyle description | Returns the best matching real pet |
+| `POST /classify-image` | Pet image | Identifies species and estimates breed |
+| `POST /assistant` | Message history and optional image | Routes the conversation to the correct capability |
 
-İstek ve yanıt örnekleri için çalışan serviste Swagger UI'ı açın. `/assistant`
-durum tutmaz; istemci her istekte konuşma geçmişinin tamamını gönderir.
+`/assistant` is stateless. The client sends the complete message history on
+every request. Recommendation results always reference a real, approved,
+available listing and its stored `photo_url`; the service does not generate
+pet images.
 
-## Prompt yapısı
+## Request flow
 
-Promptlar `app/prompts/` altında özellik bazında ve sürümlü modüller halinde
-tutulur. Her prompt modülü izlenebilirlik için bir `PROMPT_VERSION` dışa
-aktarır. Prompt davranışı değiştirildiğinde ilgili testler de güncellenmelidir.
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant A as Assistant API
+    participant R as Intent router
+    participant S as AI service flow
+    participant L as Claude
 
-## Hata ve retry davranışı
+    C->>A: messages + optional image
+    A->>R: classify intent
+    R-->>A: description / recommend / classify
+    A->>S: validated input
+    S->>L: versioned prompt
+    L-->>S: model response
+    S-->>A: parsed and validated output
+    A-->>C: typed JSON response
+```
 
-AI istemcisi yalnızca geçici hataları (rate limit, sunucu ve ağ hataları)
-üstel bekleme ile yeniden dener. Geçersiz istek veya kimlik doğrulama gibi
-kalıcı 4xx hataları tekrar gönderilmez. Sağlayıcı hataları API'den `502`
-olarak döner.
+## Prompt design
 
-## Testler
+Prompts live in `app/prompts/` as feature-specific, versioned modules:
 
-Testler Anthropic çağrılarını mock'lar; gerçek API isteği yapılmaz. Ayarların
-yüklenebilmesi için sahte ortam değerleri kullanılabilir:
+- `description_v1.py`
+- `recommend_v1.py`
+- `classify_v1.py`
+- `assistant_v1.py`
+- `router_v1.py`
+
+Each module exports `PROMPT_VERSION`, allowing a response to be traced to the
+prompt that produced it. Formatting rules that must be deterministic, such as
+age and adoption fee display, are implemented in code before the prompt is
+built.
+
+## Reliability and validation
+
+- Only rate limits, provider 5xx responses, and network failures are retried.
+- Invalid requests and authentication failures are not retried.
+- Retry count and wait bounds are configurable through environment variables.
+- Provider failures are logged and returned to the client as `502`.
+- LLM output is parsed and validated before it reaches the API response.
+- Recommendations filter out unapproved, pending, and adopted pets.
+
+## Testing
+
+The suite mocks every Anthropic call, so it does not consume API credits. Dummy
+configuration values are sufficient:
 
 ```bash
 # Windows PowerShell
@@ -111,13 +168,29 @@ DATABASE_URL=postgresql+psycopg2://test:test@localhost:5432/test \
 pytest -q
 ```
 
+The suite covers existing endpoints, assistant routing, image input, output
+validation, and deterministic fee formatting.
+
 ## Docker
 
-Tüm servisleri birlikte çalıştırmak için proje kökünde:
+Run the complete stack from the repository root:
 
 ```bash
 docker compose up --build
 ```
 
-Docker Compose, AI servisini http://localhost:8001 adresinde yayınlar ve
-servisi migration/seed işlemi başarıyla tamamlandıktan sonra başlatır.
+Docker Compose publishes the AI service at http://localhost:8001 and starts it
+only after the migration and seed job completes successfully.
+
+## Project structure
+
+```text
+app/
+├── core/       Configuration, JSON parsing, and the LLM client
+├── data/       Read-only pet repository
+├── prompts/    Versioned prompts and deterministic formatters
+├── routers/    FastAPI endpoints
+├── schemas/    Typed request and response contracts
+└── services/   Description, recommendation, classification, assistant flows
+tests/          Mocked AI unit and integration tests
+```
