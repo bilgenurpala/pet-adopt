@@ -2,7 +2,7 @@
 
 # 🐾 PetAdopt
 
-### AI-powered pet adoption across web and mobile
+### AI-powered pet adoption across web, mobile, and desktop
 
 PetAdopt turns the classic Swagger Petstore into a complete adoption platform
 with real listings, role-based workflows, admin moderation and AI-assisted pet
@@ -15,7 +15,7 @@ matching.
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![Claude](https://img.shields.io/badge/Claude_AI-D97757?style=for-the-badge)
 
-[Features](#-features) · [Architecture](#-architecture) · [Quick Start](#-quick-start) · [API](#-api-and-permissions) · [Testing](#-testing-and-quality) · [Project Board](https://github.com/users/bilgenurpala/projects/8/views/1)
+[Features](#-features) · [Architecture](#-architecture) · [Component Guides](#-component-guides) · [Quick Start](#-quick-start) · [API](#-api-and-permissions) · [Testing](#-testing-and-quality) · [Project Board](https://github.com/users/bilgenurpala/projects/8/views/1)
 
 </div>
 
@@ -42,7 +42,7 @@ real, approved and available pets from PostgreSQL rather than fabricated data.
 
 ```mermaid
 flowchart LR
-    Client["Flutter Web & Mobile"]
+    Client["Flutter Web, Mobile & Desktop"]
     API["FastAPI Backend<br/>:8000"]
     AI["AI Service<br/>:8001"]
     DB[("PostgreSQL 16")]
@@ -74,12 +74,24 @@ read-only and does not import backend models.
 | Quality | pytest, Flutter tests, Postman/Newman, GitHub Actions |
 | Runtime | Docker Compose |
 
+## 📦 Component Guides
+
+Each application is independently documented with its own architecture,
+configuration, commands, endpoints, tests, and project structure.
+
+| Component | Responsibility | Documentation |
+|---|---|---|
+| [![Backend](https://img.shields.io/badge/Backend-FastAPI-009688?logo=fastapi&logoColor=white)](backend/README.md) | Authentication, pets, categories, favourites, adoptions, uploads, and admin APIs | [Open backend guide →](backend/README.md) |
+| [![AI](https://img.shields.io/badge/AI-Anthropic_Claude-D97757)](ai/README.md) | Descriptions, recommendations, image classification, and assistant routing | [Open AI guide →](ai/README.md) |
+| [![Frontend](https://img.shields.io/badge/Frontend-Flutter-02569B?logo=flutter&logoColor=white)](frontend/README.md) | Responsive adopter experience, AI chat, profile flows, and admin workspace | [Open frontend guide →](frontend/README.md) |
+
 ## 🚀 Quick Start
 
 ### Prerequisites
 
 - Docker Desktop
 - An Anthropic API key
+- Flutter SDK for running the client locally
 
 ### Run the full stack
 
@@ -145,6 +157,7 @@ python -m uvicorn app.main:app --reload --port 8001
 |---|---|---|
 | Admin | `bilge@hotmail.com` | `Bilge1234` |
 | Admin | `arjin@outlook.com` | `Arjin2026` |
+| User | `seda@gmail.com` | `Sedanur2002` |
 
 The seed creates 35 pets across five species, five categories, adoption
 applications in every supported status, favourites and pending user listings.
@@ -198,7 +211,7 @@ path.
 |---|---|---|
 | Backend | API, permissions, pagination and adoption rules | `cd backend && pytest -q` |
 | AI | Routing, prompt output and mocked provider failures | `cd ai && pytest -q` |
-| Admin frontend | Provider state and critical admin widgets | `cd frontend && flutter test test/features/admin` |
+| Frontend | Navigation, providers, repositories, pet screens, and admin flows | `cd frontend && flutter test` |
 | Live API QA | Positive and negative seeded flows | Newman command below |
 
 ```bash
@@ -263,7 +276,7 @@ complete backend surface.
 pet-adopt/
 ├── backend/             FastAPI adoption API, migrations and seed
 ├── ai/                  Independent Claude-powered AI service
-├── frontend/            Flutter web and mobile client
+├── frontend/            Flutter web, mobile and desktop client
 ├── qa/                  Postman collection and QA plans
 ├── docs/screenshots/    API, Docker and test evidence
 ├── .agents/skills/      Reusable project workflow skill
@@ -271,9 +284,8 @@ pet-adopt/
 └── docker-compose.yml   Full-stack orchestration
 ```
 
-Each application has its own setup and architecture guide:
-[Backend](backend/README.md) · [AI service](ai/README.md) ·
-[Flutter frontend](frontend/README.md).
+See the [component guides](#-component-guides) for service-specific setup and
+development instructions.
 
 ## 👥 Team
 
