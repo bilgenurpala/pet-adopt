@@ -12,8 +12,8 @@ their own listings for an admin to approve.
 ## Repository layout
 
 ```
-backend/            Pet adoption API (FastAPI + PostgreSQL)
-ai/                 AI service (FastAPI + Claude)
+backend/            Pet adoption API (FastAPI + PostgreSQL) — see backend/README.md
+ai/                 AI service (FastAPI + Claude) — see ai/README.md
 frontend/           Flutter client (web and mobile from one codebase)
 qa/                 Postman/Newman API collection and environment
 .github/workflows/  CI (pytest on every push and pull request)
