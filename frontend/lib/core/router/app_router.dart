@@ -4,11 +4,12 @@ import '../../features/adoptions/screens/adoption_applications_page.dart';
 import '../../features/auth/providers/auth_provider.dart';
 import '../../features/auth/screens/login_screen.dart';
 import '../../features/pets/screens/favorites_page.dart';
+import '../../features/profile/screens/contact_page.dart';
+import '../../features/profile/screens/my_activity_page.dart';
 import '../../features/profile/screens/my_pet_listings_page.dart';
+import '../../features/profile/screens/settings_page.dart';
 import '../widgets/main_navigation.dart';
 import 'route_names.dart';
-import '../../features/profile/screens/settings_page.dart';
-import '../../features/profile/screens/contact_page.dart';
 
 class AppRouter {
   AppRouter._();
@@ -23,6 +24,7 @@ class AppRouter {
         }
 
         final isLoggedIn = authProvider.isAuthenticated;
+
         final isOnLoginPage = state.matchedLocation == RouteNames.login;
 
         if (!isLoggedIn && !isOnLoginPage) {
@@ -36,33 +38,37 @@ class AppRouter {
         return null;
       },
       routes: [
-        GoRoute(
-          path: RouteNames.login,
-          builder: (context, state) => const LoginScreen(),
-        ),
+        GoRoute(path: RouteNames.login, builder: (_, _) => const LoginScreen()),
         GoRoute(
           path: RouteNames.home,
-          builder: (context, state) => const MainNavigation(),
+          builder: (_, _) => const MainNavigation(),
         ),
         GoRoute(
           path: RouteNames.favorites,
-          builder: (context, state) => const FavoritesPage(),
+          builder: (_, _) => const FavoritesPage(),
         ),
         GoRoute(
+          path: RouteNames.myActivity,
+          builder: (_, _) => const MyActivityPage(),
+        ),
+
+        // Eski bağlantıların bozulmaması için korunuyor.
+        GoRoute(
           path: RouteNames.myPetListings,
-          builder: (context, state) => const MyPetListingsPage(),
+          builder: (_, _) => const MyPetListingsPage(),
         ),
         GoRoute(
           path: RouteNames.adoptionApplications,
-          builder: (context, state) => const AdoptionApplicationsPage(),
+          builder: (_, _) => const AdoptionApplicationsPage(),
         ),
+
         GoRoute(
           path: RouteNames.settings,
-          builder: (context, state) => const SettingsPage(),
+          builder: (_, _) => const SettingsPage(),
         ),
         GoRoute(
           path: RouteNames.contact,
-          builder: (context, state) => const ContactPage(),
+          builder: (_, _) => const ContactPage(),
         ),
       ],
     );
