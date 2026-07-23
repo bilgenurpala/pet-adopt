@@ -271,6 +271,10 @@ pet-adopt/
 └── docker-compose.yml   Full-stack orchestration
 ```
 
+Each application has its own setup and architecture guide:
+[Backend](backend/README.md) · [AI service](ai/README.md) ·
+[Flutter frontend](frontend/README.md).
+
 ## 👥 Team
 
 | Area | Owner |
