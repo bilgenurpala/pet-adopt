@@ -15,7 +15,7 @@ matching.
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![Claude](https://img.shields.io/badge/Claude_AI-D97757?style=for-the-badge)
 
-[Features](#-features) · [Architecture](#-architecture) · [Component Guides](#-component-guides) · [Quick Start](#-quick-start) · [API](#-api-and-permissions) · [Testing](#-testing-and-quality) · [Project Board](https://github.com/users/bilgenurpala/projects/8/views/1)
+[Features](#-features) · [Product Tour](#-product-tour) · [Architecture](#-architecture) · [Component Guides](#-component-guides) · [Quick Start](#-quick-start) · [API](#-api-and-permissions) · [Testing](#-testing-and-quality) · [Design Decisions](#-technology-choices-and-rationale) · [Project Board](https://github.com/users/bilgenurpala/projects/8/views/1)
 
 </div>
 
@@ -37,6 +37,73 @@ The original Petstore shop model was redesigned around adoption. Prices became
 optional adoption fees, orders became adoption applications, and user-created
 listings now pass through an admin approval workflow. AI recommendations use
 real, approved and available pets from PostgreSQL rather than fabricated data.
+
+## 🖼️ Product Tour
+
+### Adopter experience
+
+<table>
+  <tr>
+    <td width="50%" align="center"><strong>Browse pets</strong></td>
+    <td width="50%" align="center"><strong>Search and filter</strong></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/home-page.jpeg" alt="PetAdopt home page with pet cards, species filters, and favourite buttons"></td>
+    <td><img src="docs/screenshots/search-and-filtering.jpeg" alt="PetAdopt search results filtered for a pet named Shila"></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><strong>Favourites</strong></td>
+    <td width="50%" align="center"><strong>My activity</strong></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/favorites.jpeg" alt="Saved favourite pet listing in PetAdopt"></td>
+    <td><img src="docs/screenshots/my-activity.jpeg" alt="My Activity page showing an approved adoption application"></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><strong>Profile</strong></td>
+    <td width="50%" align="center"><strong>Registration</strong></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/profile.jpeg" alt="PetAdopt user profile with favourites, activity, support, and sign-out options"></td>
+    <td><img src="docs/screenshots/authentication.jpeg" alt="PetAdopt account registration form"></td>
+  </tr>
+</table>
+
+### AI assistant
+
+<p align="center">
+  <img src="docs/screenshots/ai-assistant.jpeg" alt="PetAdopt AI Assistant recommending suitable real pets for an apartment lifestyle" width="900">
+</p>
+
+The assistant interprets lifestyle requests and recommends real, approved, and
+available pets from the platform rather than generating fictional listings.
+
+### Admin workspace
+
+<table>
+  <tr>
+    <td width="50%" align="center"><strong>Dashboard</strong></td>
+    <td width="50%" align="center"><strong>Pet management</strong></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/admin-dashboard.jpeg" alt="Admin dashboard with platform statistics, review queue, and moderation progress"></td>
+    <td><img src="docs/screenshots/admin-pets.jpeg" alt="Admin pet management table with filters, search, and listing actions"></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><strong>Create a listing</strong></td>
+    <td width="50%" align="center"><strong>Application review</strong></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/admin-add-new-pet.jpeg" alt="Admin dialog for creating a pet listing from the supported pet contract"></td>
+    <td><img src="docs/screenshots/admin-applications.jpeg" alt="Admin adoption applications table with status filters and actions"></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center"><strong>User management</strong></td>
+  </tr>
+  <tr>
+    <td colspan="2"><img src="docs/screenshots/admin-users.jpeg" alt="Admin user management table with roles, search, and account actions"></td>
+  </tr>
+</table>
 
 ## 🏗 Architecture
 
@@ -255,20 +322,220 @@ complete backend surface.
 
 </details>
 
-## 🧠 Key Design Decisions
+## 🧠 Technology Choices and Rationale
 
-- **Real-data AI recommendations:** only approved, available pets can be
-  recommended.
-- **Live authorization:** user roles come from the database, not token claims.
-- **Privacy-aware errors:** invisible resources return `404`; forbidden actions
-  return `403`.
-- **Precision-preserving API:** decimal ages and adoption fees serialize as
-  strings.
-- **Stateless assistant:** the client sends conversation history with every
-  assistant request.
-- **Resilient AI calls:** only transient failures are retried with exponential
-  backoff.
-- **Traceable prompts:** every prompt module has an explicit version.
+This section explains why the project made its main technical choices, the
+alternatives that were considered, and the trade-offs that were accepted.
+
+### 1. Adoption domain instead of a sales domain
+
+PetAdopt deliberately adapts the classic Petstore model to adoption rather
+than retail. The required engineering capabilities—CRUD, pagination, Problem
+Details, file uploads, RAG, JSON validation, Docker, and CI—are independent of
+the domain; adoption provides a more meaningful context for applying them.
+
+- An AI request such as “I live in an apartment and want a calm cat” is a
+  natural shelter-use case rather than an artificial catalogue query.
+- Replacing orders with adoption applications introduces a richer workflow:
+  `pending → approved → completed`, together with effects such as updating the
+  pet's availability.
+
+The trade-off was a small, intentional contract change: one table name, three
+fields, and two enums changed after team agreement before implementation.
+
+### 2. Backend: Python and FastAPI
+
+FastAPI was selected because it produces the OpenAPI 3.1 contract from the
+application code from the first day. Swagger documentation is therefore not a
+separate artifact that can drift from the implementation. Pydantic keeps
+request bodies, query parameters, response schemas, and validation in the same
+type system, with invalid input automatically producing structured `422`
+responses.
+
+Python also keeps the backend and AI services in one language. Although NestJS
+and .NET could both implement the API, the AI service necessarily uses Python
+SDKs and data tooling. A two-language stack would add separate dependency,
+testing, and Docker conventions without a corresponding benefit for this
+project's timeline.
+
+### 3. Database: PostgreSQL, SQLAlchemy, and Alembic
+
+PostgreSQL is the production database because the model has seven enum-backed
+concepts: species, gender, size, energy level, pet status, application status,
+and role. PostgreSQL enforces valid enum values at the database level. Its
+ecosystem also integrates naturally with SQLAlchemy and Alembic.
+
+Exact `Numeric(3,1)` and `Numeric(10,2)` columns avoid floating-point rounding
+problems for ages and adoption fees. MySQL was a viable alternative, but
+PostgreSQL offered stronger enum support and a more established migration
+workflow for this stack. SQLite was not used as the application database
+because its enum support and schema-alteration behaviour differ from
+PostgreSQL.
+
+Foreign keys and service-layer checks serve different purposes. The service
+layer returns a clear, domain-specific response to the client, while database
+constraints preserve integrity even under concurrent requests.
+
+### 4. AI as an independent service
+
+The AI capability is an independent FastAPI service with its own `main.py`,
+requirements, environment file, and Docker image rather than a module inside
+the adoption API.
+
+- Provider latency or failure cannot take down core flows such as listing pets
+  or signing in.
+- AI SDK versions remain isolated from the backend dependency set.
+- The service can be scaled separately in a production deployment because its
+  CPU and request profile differs from the API.
+
+The cost is two services, two environment files, and two Dockerfiles. Docker
+Compose reduces that operational cost to a single startup command.
+
+### 5. How the AI service reads pet data
+
+For RAG context, the AI service reads the database through one read-only query
+rather than calling backend HTTP endpoints. This kept real-data recommendations
+available while backend routes were still being completed and avoids adding an
+HTTP hop, latency, and another failure surface to a read-only operation.
+
+The AI service does not import backend SQLAlchemy models; it owns its query and
+keeps the dependency direction narrow. The accepted trade-off is that the
+visibility condition—approved and available pets only—exists in both services.
+If that business rule changes, both locations must be updated together.
+
+### 6. LLM provider: Claude API
+
+Claude was selected because one provider supports both text generation and the
+optional image-classification feature. Its instruction following and structured
+JSON output behaviour are especially useful in an architecture that validates
+every model response with Pydantic.
+
+The application never trusts raw model output. Description, recommendation, and
+image-classification responses are validated against dedicated schemas. The
+species field is constrained with a `Literal`, so an out-of-contract species
+cannot silently enter the API response.
+
+### 7. Explicit retry policy
+
+The project uses its own retry layer instead of relying solely on SDK defaults.
+That makes retry behaviour explicit and testable.
+
+| Failure type | Meaning | Retry? |
+|---|---|---|
+| `429` | Rate limit | Yes |
+| `500` / `529` | Provider error or overload | Yes |
+| Network error | Connection interruption | Yes |
+| `401` | Invalid API key | No |
+| `400` | Invalid request | No |
+
+Retrying permanent failures only delays useful feedback and hides the real
+problem. Transient failures use exponential backoff (`1s → 2s → 4s`). Retry
+count and delay are safe environment-level configuration values; API keys stay
+mandatory and private in `.env` files.
+
+### 8. Versioned prompts
+
+Prompts are versioned files under `ai/app/prompts/` rather than strings embedded
+in application code. Files such as `description_v1`, `recommend_v1`, and
+`classify_v1` make changes traceable, make rollback possible, and allow output
+quality to be compared across prompt versions.
+
+Rules that should never be left to model memory are implemented in code. For
+example, the age wording for pets younger than one year is normalised before it
+reaches a prompt rather than asking the model to remember the rule.
+
+### 9. One assistant entry point and focused endpoints
+
+`POST /assistant` provides one conversational entry point, while
+`/generate-description`, `/recommend-pet`, and `/classify-image` remain
+available as focused endpoints. Business logic lives in shared functions; both
+the assistant and the focused routes call those functions. This supports a
+simple chat experience for the client while keeping QA, evaluation, and admin
+integration independently testable.
+
+The assistant is intentionally stateless. The client supplies the complete
+message history with each request, so the server does not introduce an
+out-of-scope conversation table or retention lifecycle. Recommendations always
+refer to a real database pet and its real `photo_url`; the system does not
+fabricate adoptable animals or images.
+
+### 10. Authentication: JWT and bcrypt
+
+JWT access and refresh tokens allow web and mobile clients to share a
+stateless authentication mechanism across independent services. Access tokens
+last 15 minutes and refresh tokens last 7 days; both are rotated during refresh.
+
+Roles are deliberately not embedded in token claims. `get_current_user` already
+looks up the current user, so reading the role from the database adds no extra
+lookup and ensures that role changes take effect immediately. A deleted user
+with an otherwise valid token receives `401`.
+
+Refresh tokens are stateless and therefore cannot be individually revoked
+without an additional blacklist. The `jti` claim leaves a clear extension path
+for blacklist support later. Passwords are hashed with bcrypt in the service
+layer, never stored or returned in plain text. Password reset and email
+verification flows are intentionally outside the project scope.
+
+### 11. Error format: Problem Details
+
+The API uses RFC 7807 Problem Details with the
+`application/problem+json` media type and the `type`, `title`, `status`,
+`detail`, and `instance` fields. Clients can use one error model and display
+the user-facing explanation from `detail`.
+
+An invisible record returns `404`, not `403`, so an unapproved listing is not
+revealed to another user. Attempting to modify someone else's already-visible
+listing returns `403`, because its existence is not private.
+
+### 12. API naming and precision decisions
+
+The pagination parameter is named `per_page`, not `size`, because `size` is
+already a pet attribute (`small`, `medium`, or `large`). This avoids ambiguous
+requests such as `GET /pets?size=large` and was communicated as a client-facing
+breaking contract change.
+
+Decimal `age` and `adoption_fee` values are serialised as strings. This
+preserves `Decimal` precision across JSON boundaries; clients explicitly parse
+the values when they need numeric presentation or calculations.
+
+### 13. Testing strategy
+
+Backend tests use in-memory SQLite for speed and isolation: they need neither a
+live database nor an API key, and run in seconds in CI. PostgreSQL-specific
+migration confidence is maintained separately by validating the
+`upgrade → downgrade → upgrade` cycle against PostgreSQL.
+
+LLM calls are mocked so CI does not spend money, require a provider key, or
+become flaky because of nondeterministic model output. pytest validates the API
+at code level, while the Postman/Newman collection validates seeded live flows
+as a black-box client. The two layers test different risks.
+
+### 14. Docker and continuous integration
+
+Docker Compose starts PostgreSQL, the backend, and the AI service together.
+Dependent services wait for the database health check, and a named volume keeps
+data after `docker compose down`. The goal is for a new contributor to start
+the stack without manually coordinating infrastructure.
+
+GitHub Actions runs the backend, AI, and admin frontend test jobs for every
+pull request and push to `main`. Seeded pet images are stored locally under
+`uploads/pets/` rather than loaded from third-party URLs. This avoids hotlink
+and CORS failures and keeps demos independent of external image hosting.
+
+### Summary
+
+| Area | Choice | Primary reason |
+|---|---|---|
+| Backend | Python + FastAPI | Automatic OpenAPI, Pydantic validation, one language with AI |
+| Database | PostgreSQL | Native enums, Alembic compatibility, precise decimals |
+| ORM and migrations | SQLAlchemy + Alembic | Versioned, repeatable schema changes |
+| AI architecture | Separate FastAPI service | Independent failure domain, dependencies, and scaling |
+| LLM | Claude API | Vision support and structured output from one provider |
+| Retry | Explicit custom policy | Controlled retryability for each failure type |
+| Authentication | JWT + bcrypt | Stateless authentication for two client types and services |
+| Error format | Problem Details (RFC 7807) | Standardised, consistent client errors |
+| Testing | pytest/SQLite + Newman | Fast isolated checks plus live black-box validation |
+| Runtime | Docker Compose | One-command full-stack startup |
 
 ## 🗂 Repository Structure
 
