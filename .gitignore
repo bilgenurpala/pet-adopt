@@ -7,3 +7,15 @@ Thumbs.db
 *.log
 
 .env
+# Python
+backend/venv/
+backend/__pycache__/
+**/__pycache__/
+*.pyc
+.pytest_cache/
+
+# Flutter
+frontend/.dart_tool/
+frontend/build/
+frontend/.flutter-plugins
+frontend/.flutter-plugins-dependencies

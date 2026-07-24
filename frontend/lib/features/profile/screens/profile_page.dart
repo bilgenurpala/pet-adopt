@@ -188,17 +188,6 @@ class _ProfilePageState extends State<ProfilePage> {
             const SizedBox(height: 12),
 
             _ProfileTile(
-              icon: Icons.settings_outlined,
-              title: 'Settings',
-              subtitle: 'Manage application preferences',
-              onTap: () {
-                context.push(RouteNames.settings);
-              },
-            ),
-
-            const SizedBox(height: 12),
-
-            _ProfileTile(
               icon: Icons.logout,
               title: 'Sign Out',
               subtitle: 'Sign out of your account',

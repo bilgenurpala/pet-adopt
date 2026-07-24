@@ -6,14 +6,20 @@ import 'package:frontend/features/pets/providers/favorites_provider.dart';
 import 'package:frontend/features/pets/providers/pet_provider.dart';
 import 'package:frontend/features/pets/screens/home_page.dart';
 
+import '../../support/fake_pet_repository.dart';
+
 void main() {
   group('HomePage Widget Tests', () {
     testWidgets('Home page renders successfully', (WidgetTester tester) async {
       await tester.pumpWidget(
         MultiProvider(
           providers: [
-            ChangeNotifierProvider(create: (_) => PetProvider()),
-            ChangeNotifierProvider(create: (_) => FavoritesProvider()),
+            ChangeNotifierProvider(
+              create: (_) => PetProvider(repository: FakePetRepository()),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => FavoritesProvider(repository: FakePetRepository()),
+            ),
           ],
           child: const MaterialApp(home: HomePage()),
         ),
@@ -28,8 +34,12 @@ void main() {
       await tester.pumpWidget(
         MultiProvider(
           providers: [
-            ChangeNotifierProvider(create: (_) => PetProvider()),
-            ChangeNotifierProvider(create: (_) => FavoritesProvider()),
+            ChangeNotifierProvider(
+              create: (_) => PetProvider(repository: FakePetRepository()),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => FavoritesProvider(repository: FakePetRepository()),
+            ),
           ],
           child: const MaterialApp(home: HomePage()),
         ),

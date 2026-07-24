@@ -60,31 +60,47 @@ class _HomePageState extends State<HomePage> {
   }
 
   int _columnCount(double width) {
-    if (width < 600) {
+    if (width < 620) {
       return 1;
     }
 
-    if (width < 900) {
+    if (width < 920) {
       return 2;
     }
 
-    if (width < 1200) {
+    if (width < 1220) {
       return 3;
     }
 
-    return 4;
+    if (width < 1580) {
+      return 4;
+    }
+
+    return 5;
   }
 
-  double _cardAspectRatio(int columnCount) {
+  double _cardHeight({required double width, required int columnCount}) {
     if (columnCount == 1) {
-      return 0.9;
+      return 335;
     }
 
     if (columnCount == 2) {
-      return 0.72;
+      return 305;
     }
 
-    return 0.68;
+    if (width < 1220) {
+      return 292;
+    }
+
+    return 280;
+  }
+
+  Future<void> _refreshPets() {
+    return context.read<PetProvider>().loadPets(
+      species: _selectedSpecies == 'All'
+          ? null
+          : _selectedSpecies.toLowerCase(),
+    );
   }
 
   @override
@@ -108,7 +124,12 @@ class _HomePageState extends State<HomePage> {
 
           return LayoutBuilder(
             builder: (context, constraints) {
-              final columnCount = _columnCount(constraints.maxWidth);
+              final width = constraints.maxWidth;
+              final columnCount = _columnCount(width);
+              final cardHeight = _cardHeight(
+                width: width,
+                columnCount: columnCount,
+              );
 
               return Column(
                 children: [
@@ -120,7 +141,7 @@ class _HomePageState extends State<HomePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SearchBarWidget(onChanged: _onSearchChanged),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 14),
                           SpeciesFilterChips(
                             selectedSpecies: _selectedSpecies,
                             onSelected: _onSpeciesChanged,
@@ -129,7 +150,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 18),
                   Expanded(
                     child: visiblePets.isEmpty
                         ? const EmptyState(
@@ -137,24 +158,16 @@ class _HomePageState extends State<HomePage> {
                             subtitle: 'Try another search keyword or filter.',
                           )
                         : RefreshIndicator(
-                            onRefresh: () {
-                              return context.read<PetProvider>().loadPets(
-                                species: _selectedSpecies == 'All'
-                                    ? null
-                                    : _selectedSpecies.toLowerCase(),
-                              );
-                            },
+                            onRefresh: _refreshPets,
                             child: GridView.builder(
                               physics: const AlwaysScrollableScrollPhysics(),
                               itemCount: visiblePets.length,
                               gridDelegate:
                                   SliverGridDelegateWithFixedCrossAxisCount(
                                     crossAxisCount: columnCount,
-                                    crossAxisSpacing: 18,
-                                    mainAxisSpacing: 18,
-                                    childAspectRatio: _cardAspectRatio(
-                                      columnCount,
-                                    ),
+                                    crossAxisSpacing: 16,
+                                    mainAxisSpacing: 16,
+                                    mainAxisExtent: cardHeight,
                                   ),
                               itemBuilder: (context, index) {
                                 return PetCard(pet: visiblePets[index]);

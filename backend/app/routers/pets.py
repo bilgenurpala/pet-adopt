@@ -4,8 +4,10 @@ from sqlalchemy.orm import Session
 from app.core.deps import get_current_user, get_current_user_optional, require_admin
 from app.core.pagination import PaginationParams, paginate
 from app.database import get_db
+from app.models.adoption_application import AdoptionApplication
 from app.models.category import Category
 from app.models.enums import EnergyLevel, PetStatus, Role, Size, Species
+from app.models.favorite import Favorite
 from app.models.pet import Pet
 from app.models.user import User
 from app.schemas.common import Page
@@ -146,6 +148,24 @@ def delete_pet(
     current_user: User = Depends(get_current_user),
 ):
     pet = pet_service.get_manageable_pet(db, pet_id, current_user)
+
+    application_count = (
+        db.query(AdoptionApplication)
+        .filter(AdoptionApplication.pet_id == pet.id)
+        .count()
+    )
+    favorite_count = db.query(Favorite).filter(Favorite.pet_id == pet.id).count()
+
+    if application_count or favorite_count:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=(
+                f"This pet still has {application_count} application(s) and "
+                f"{favorite_count} favorite(s). Remove them before deleting "
+                "the listing."
+            ),
+        )
+
     db.delete(pet)
     db.commit()
 

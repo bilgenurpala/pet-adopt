@@ -6,7 +6,8 @@ class ContactPage extends StatelessWidget {
   const ContactPage({super.key});
 
   static const String supportEmail = 'support@petadoption.com';
-  static const String githubRepository = 'github.com/bilgenurpala/pet-adopt';
+  static const String githubRepository =
+      'https://github.com/bilgenurpala/pet-adopt';
 
   void _showMessage(BuildContext context, String message) {
     ScaffoldMessenger.of(context)
@@ -122,7 +123,7 @@ class ContactPage extends StatelessWidget {
             height: 52,
             child: FilledButton.icon(
               onPressed: () {
-                _showMessage(context, 'Bug reporting will be available soon.');
+                _showMessage(context, 'Please report bugs via: $supportEmail');
               },
               icon: const Icon(Icons.bug_report_outlined),
               label: const Text('Report a Bug'),
@@ -135,7 +136,7 @@ class ContactPage extends StatelessWidget {
               onPressed: () {
                 _showMessage(
                   context,
-                  'Feedback submission will be available soon.',
+                  'Please send your feedback to: $supportEmail',
                 );
               },
               icon: const Icon(Icons.feedback_outlined),
