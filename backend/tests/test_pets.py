@@ -313,7 +313,7 @@ class TestDeletePet:
             == 403
         )
 
-def test_a_pet_with_an_application_cannot_be_deleted(
+    def test_a_pet_with_an_application_cannot_be_deleted(
         self, client, auth, admin, other_user, registered_user, make_pet
     ):
         pet = make_pet(registered_user["id"], is_approved=True)
@@ -346,6 +346,8 @@ def test_a_pet_with_an_application_cannot_be_deleted(
 
         assert response.status_code == 409
         assert "1 favorite" in response.json()["detail"]
+
+
 class TestApprovePet:
     def test_admin_can_approve(self, client, auth, admin, registered_user, make_pet):
         pet = make_pet(registered_user["id"], is_approved=False)
