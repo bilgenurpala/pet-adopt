@@ -334,13 +334,17 @@ class _SidebarItem extends StatelessWidget {
                       : AppColors.textSecondary,
                 ),
                 const SizedBox(width: 14),
-                Text(
-                  destination.label,
-                  style: TextStyle(
-                    color: selected
-                        ? AppColors.primaryDark
-                        : AppColors.textSecondary,
-                    fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                Expanded(
+                  child: Text(
+                    destination.label,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    style: TextStyle(
+                      color: selected
+                          ? AppColors.primaryDark
+                          : AppColors.textSecondary,
+                      fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                    ),
                   ),
                 ),
               ],
