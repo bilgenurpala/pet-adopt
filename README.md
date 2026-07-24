@@ -77,6 +77,46 @@ real, approved and available pets from PostgreSQL rather than fabricated data.
 The assistant interprets lifestyle requests and recommends real, approved, and
 available pets from the platform rather than generating fictional listings.
 
+### Mobile experience
+
+These screens were captured from the Flutter application running in an Android
+emulator, demonstrating the real mobile layout rather than a browser resize.
+
+<table>
+  <tr>
+    <td width="50%" align="center"><strong>Sign in</strong></td>
+    <td width="50%" align="center"><strong>Registration</strong></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/mobile-login.png" alt="PetAdopt mobile sign-in screen" width="300"></td>
+    <td align="center"><img src="docs/screenshots/mobile-registration.png" alt="PetAdopt mobile registration screen" width="300"></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><strong>Browse pets</strong></td>
+    <td width="50%" align="center"><strong>Favourites</strong></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/mobile-home.png" alt="PetAdopt mobile home screen with filters, pet cards, and bottom navigation" width="300"></td>
+    <td align="center"><img src="docs/screenshots/mobile-favorites.png" alt="PetAdopt mobile favourites screen" width="300"></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><strong>Profile</strong></td>
+    <td width="50%" align="center"><strong>Contact and support</strong></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/mobile-profile.png" alt="PetAdopt mobile profile screen" width="300"></td>
+    <td align="center"><img src="docs/screenshots/mobile-contact.png" alt="PetAdopt mobile contact and support screen" width="300"></td>
+  </tr>
+  <tr>
+    <td width="50%" align="center"><strong>AI assistant</strong></td>
+    <td width="50%" align="center"><strong>AI recommendation</strong></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/mobile-ai-assistant.png" alt="PetAdopt mobile AI Assistant conversation screen" width="300"></td>
+    <td align="center"><img src="docs/screenshots/mobile-ai-conversation.png" alt="PetAdopt mobile AI Assistant responding to a Turkish lifestyle request with real pet recommendations" width="300"></td>
+  </tr>
+</table>
+
 ### Admin workspace
 
 <table>
