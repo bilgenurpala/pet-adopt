@@ -313,6 +313,40 @@ class TestDeletePet:
             == 403
         )
 
+    def test_a_pet_with_an_application_cannot_be_deleted(
+        self, client, auth, admin, other_user, registered_user, make_pet
+    ):
+        pet = make_pet(registered_user["id"], is_approved=True)
+        client.post(
+            "/adoptions",
+            json={"pet_id": pet.id},
+            headers=auth(other_user["token"]),
+        )
+
+        response = client.delete(
+            f"/pets/{pet.id}", headers=auth(admin["token"])
+        )
+
+        assert response.status_code == 409
+        assert "1 application" in response.json()["detail"]
+
+    def test_a_pet_with_a_favorite_cannot_be_deleted(
+        self, client, auth, admin, other_user, registered_user, make_pet
+    ):
+        pet = make_pet(registered_user["id"], is_approved=True)
+        client.post(
+            "/favorites",
+            json={"pet_id": pet.id},
+            headers=auth(other_user["token"]),
+        )
+
+        response = client.delete(
+            f"/pets/{pet.id}", headers=auth(admin["token"])
+        )
+
+        assert response.status_code == 409
+        assert "1 favorite" in response.json()["detail"]
+
 
 class TestApprovePet:
     def test_admin_can_approve(self, client, auth, admin, registered_user, make_pet):

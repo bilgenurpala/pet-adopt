@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:frontend/features/pets/providers/favorites_provider.dart';
 import 'package:frontend/features/pets/screens/favorites_page.dart';
 
+import '../../support/fake_pet_repository.dart';
+
 void main() {
   group('FavoritesPage Widget Tests', () {
     testWidgets('Favorites page renders successfully', (
@@ -12,7 +14,7 @@ void main() {
     ) async {
       await tester.pumpWidget(
         ChangeNotifierProvider(
-          create: (_) => FavoritesProvider(),
+          create: (_) => FavoritesProvider(repository: FakePetRepository()),
           child: const MaterialApp(home: FavoritesPage()),
         ),
       );

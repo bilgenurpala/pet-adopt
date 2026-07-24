@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-
 import '../../../core/constants/app_breakpoints.dart';
+import '../../../core/router/route_names.dart';
+import '../../auth/providers/auth_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../providers/admin_applications_provider.dart';
 import '../providers/admin_dashboard_provider.dart';
@@ -85,8 +87,20 @@ class _AdminShellViewState extends State<_AdminShellView> {
     setState(() => _selectedIndex = index);
   }
 
+  Future<void> _logout() async {
+    await context.read<AuthProvider>().logout();
+
+    if (!mounted) {
+      return;
+    }
+
+    context.go(RouteNames.login);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final authProvider = context.watch<AuthProvider>();
+    final currentUser = authProvider.currentUser;
     final isWide = MediaQuery.of(context).size.width >= AppBreakpoints.tablet;
 
     final body = IndexedStack(index: _selectedIndex, children: _screens);
@@ -100,6 +114,8 @@ class _AdminShellViewState extends State<_AdminShellView> {
               _AdminSidebar(
                 selectedIndex: _selectedIndex,
                 onSelected: _onSelect,
+                adminEmail: currentUser?.email ?? '',
+                onLogout: authProvider.isLoading ? null : _logout,
               ),
               Expanded(child: body),
             ],
@@ -109,6 +125,17 @@ class _AdminShellViewState extends State<_AdminShellView> {
     }
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text(_destinations[_selectedIndex].label),
+        actions: [
+          IconButton(
+            tooltip: 'Sign Out',
+            onPressed: authProvider.isLoading ? null : _logout,
+            icon: const Icon(Icons.logout),
+          ),
+          const SizedBox(width: 4),
+        ],
+      ),
       body: body,
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
@@ -127,10 +154,17 @@ class _AdminShellViewState extends State<_AdminShellView> {
 }
 
 class _AdminSidebar extends StatelessWidget {
-  const _AdminSidebar({required this.selectedIndex, required this.onSelected});
+  const _AdminSidebar({
+    required this.selectedIndex,
+    required this.onSelected,
+    required this.adminEmail,
+    required this.onLogout,
+  });
 
   final int selectedIndex;
   final ValueChanged<int> onSelected;
+  final String adminEmail;
+  final VoidCallback? onLogout;
 
   @override
   Widget build(BuildContext context) {
@@ -192,40 +226,53 @@ class _AdminSidebar extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: AppColors.border),
               ),
-              child: const Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  CircleAvatar(
-                    radius: 18,
-                    backgroundColor: AppColors.primaryLight,
-                    child: Icon(
-                      Icons.admin_panel_settings_outlined,
-                      color: AppColors.primaryDark,
-                      size: 20,
-                    ),
+                  Row(
+                    children: [
+                      const CircleAvatar(
+                        radius: 18,
+                        backgroundColor: AppColors.primaryLight,
+                        child: Icon(
+                          Icons.admin_panel_settings_outlined,
+                          color: AppColors.primaryDark,
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Administrator',
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
+                              ),
+                            ),
+                            Text(
+                              adminEmail.isEmpty
+                                  ? 'Management access'
+                                  : adminEmail,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: AppColors.textSecondary,
+                                fontSize: 11,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Administrator',
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 13,
-                          ),
-                        ),
-                        Text(
-                          'Management access',
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: AppColors.textSecondary,
-                            fontSize: 11,
-                          ),
-                        ),
-                      ],
-                    ),
+                  const SizedBox(height: 12),
+                  OutlinedButton.icon(
+                    onPressed: onLogout,
+                    icon: const Icon(Icons.logout, size: 19),
+                    label: const Text('Sign Out'),
                   ),
                 ],
               ),
@@ -287,13 +334,17 @@ class _SidebarItem extends StatelessWidget {
                       : AppColors.textSecondary,
                 ),
                 const SizedBox(width: 14),
-                Text(
-                  destination.label,
-                  style: TextStyle(
-                    color: selected
-                        ? AppColors.primaryDark
-                        : AppColors.textSecondary,
-                    fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                Expanded(
+                  child: Text(
+                    destination.label,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    style: TextStyle(
+                      color: selected
+                          ? AppColors.primaryDark
+                          : AppColors.textSecondary,
+                      fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                    ),
                   ),
                 ),
               ],
